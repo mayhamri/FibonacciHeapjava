@@ -246,7 +246,7 @@ public class AVLTree {
         int grandfH = father.getParent().getHeight();
         father.setHeight(fatherH-1);
         father.getParent().setHeight(grandfH-1);
-        if (( fatherH - grandfH) == 1){
+        if (( fatherH - father.getRight().getHeight()) == 1){
             father.getRight().setHeight(father.getRight().getHeight()+1);
             Rotate(father,father.getRight());
             Rotate(father.getParent().getParent(),father.getParent());
@@ -267,27 +267,43 @@ public class AVLTree {
             father.setRight(son.getLeft());
             son.setLeft(father);
             IAVLNode grandf = father.getParent();
-            if (grandf.getKey() > son.getKey()){
-                grandf.setLeft(son);
+            if (grandf!= null){
+                if (grandf.getKey() > son.getKey()){
+                    grandf.setLeft(son);
+                }
+                else{
+                    grandf.setRight(son);
+                }
+                son.setParent(grandf);
+                father.setParent(son);
             }
             else{
-                grandf.setRight(son);
+                this.root = son;
+                son.setParent(null);
+                father.setParent(son);
             }
-            son.setParent(grandf);
-            father.setParent(son);
+
         }
         else{//rightrotate
             father.setLeft(son.getRight());
             son.setRight(father);
             IAVLNode grandf = father.getParent();
-            if (grandf.getKey() > son.getKey()){
-                grandf.setLeft(son);
+            if (grandf!= null){
+                if (grandf.getKey() > son.getKey()){
+                    grandf.setLeft(son);
+                }
+                else{
+                    grandf.setRight(son);
+                }
+                son.setParent(grandf);
+                father.setParent(son);
             }
             else{
-                grandf.setRight(son);
+                this.root = son;
+                son.setParent(null);
+                father.setParent(son);
             }
-            son.setParent(grandf);
-            father.setParent(son);
+
         }
     }
     /**
@@ -343,6 +359,9 @@ public class AVLTree {
      */
     public String min()
     {
+        if(this.size ==0 ){
+            return null;
+        }
         int [] array = this.keysToArray();
         int k= array[0];
         return search(k); // to be replaced by student code
@@ -356,6 +375,9 @@ public class AVLTree {
      */
     public String max()
     {
+        if (this.size == 0){
+            return null;
+        }
         int [] array = this.keysToArray();
         int k= array[array.length-1];
         return search(k);
@@ -369,6 +391,9 @@ public class AVLTree {
      */
     public int[] keysToArray()
     {
+        if(this.size == 0){
+            return new int[0];
+        }
         return KeysToArrayHelp(this.root);
     }
 
@@ -536,9 +561,9 @@ public class AVLTree {
         {
 
             if ( this.key == -1){
-                return true; // to be replaced by student code
+                return false; // to be replaced by student code
             }
-            return false;
+            return true;
         }
 
         public void setHeight(int height)
