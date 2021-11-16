@@ -242,9 +242,11 @@ public class AVLTree {
      * THIS FUNCTION IS REBALNCING WHEN AFTER PROMOTIONG WE GOT INTO CASE 3
      */
     public void RebalanceCase33 ( IAVLNode father){
-        father.setHeight(father.getHeight()-1);
-        father.getParent().setHeight(father.getParent().getHeight()-1);
-        if (( father.getHeight() - father.getRight().getHeight()) == 1){
+        int fatherH = father.getHeight();
+        int grandfH = father.getParent().getHeight();
+        father.setHeight(fatherH-1);
+        father.getParent().setHeight(grandfH-1);
+        if (( fatherH - grandfH) == 1){
             father.getRight().setHeight(father.getRight().getHeight()+1);
             Rotate(father,father.getRight());
             Rotate(father.getParent().getParent(),father.getParent());
