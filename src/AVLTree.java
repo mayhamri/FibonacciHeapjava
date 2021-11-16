@@ -91,7 +91,6 @@ public class AVLTree {
         int numofop = 0;
         if (!isAleaf(father)){
             InsertIfFatherIsNotALeaf(father,i,k);
-            numofop +=1;
         }
 
         else{
@@ -167,10 +166,29 @@ public class AVLTree {
         if (( (rightdiffrence ==1)&(leftdiffrence == 0)) | ((rightdiffrence == 0)&(leftdiffrence == 1))){
             return 1;
         }
-        else if (((grandfather.getHeight()- father.getLeft().getHeight()) == 2) |((grandfather.getHeight()- father.getRight().getHeight()) == 2) ){
-            return 3;
+        if(IsRightSon(grandfather,father)){
+            if ((father.getHeight() - father.getRight().getHeight())==2){
+                return 3;
+            }
+        }
+        else {
+            if((father.getHeight() - father.getLeft().getHeight())==2){
+                return 3;
+            }
         }
         return 2;
+
+    }
+
+    /**
+     *
+     * returns true if son is a right son of father.
+     */
+    public boolean IsRightSon(IAVLNode father, IAVLNode son){
+        if (father.getKey() > son.getKey()){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -200,10 +218,12 @@ public class AVLTree {
         if (( father.getHeight() - father.getRight().getHeight()) == 1){
             father.getRight().setHeight(father.getRight().getHeight()+1);
             Rotate(father,father.getRight());
+            Rotate(father.getParent().getParent(),father.getParent());
         }
         else {
             father.getLeft().setHeight(father.getLeft().getHeight()+1);
             Rotate(father,father.getLeft());
+            Rotate(father.getParent().getParent(),father.getParent());
         }
     }
 
@@ -255,6 +275,7 @@ public class AVLTree {
      */
     public void CreateVirtualSonRight(IAVLNode node){
         IAVLNode son = new AVLNode(null,-1);
+        son.setParent(node);
         node.setRight(son);
     }
 
@@ -264,6 +285,7 @@ public class AVLTree {
      */
     public void CreateVirtualSonLeft(IAVLNode node){
         IAVLNode son = new AVLNode(null,-1);
+        son.setParent(node);
         node.setLeft(son);
     }
     /**
@@ -288,7 +310,9 @@ public class AVLTree {
      */
     public String min()
     {
-        return "minDefaultString"; // to be replaced by student code
+        int [] array = this.keysToArray();
+        int k= array[0];
+        return search(k); // to be replaced by student code
     }
 
     /**
@@ -299,7 +323,9 @@ public class AVLTree {
      */
     public String max()
     {
-        return "maxDefaultString"; // to be replaced by student code
+        int [] array = this.keysToArray();
+        int k= array[array.length-1];
+        return search(k);
     }
 
     /**
@@ -310,7 +336,24 @@ public class AVLTree {
      */
     public int[] keysToArray()
     {
-        return new int[33]; // to be replaced by student code
+        return KeysToArrayHelp(this.root);
+    }
+
+    public int[] KeysToArrayHelp(IAVLNode root){
+        if (root.isRealNode()){
+            int [] smaller = KeysToArrayHelp(root.getLeft());
+            int [] larger = KeysToArrayHelp(root.getRight());
+            int [] total = new int[smaller.length+larger.length+1];
+            for (int i = 0 ; i < smaller.length ; i ++){
+                total[i] = smaller[i];
+            }
+            total[smaller.length]= root.getKey();
+            for ( int i=0; i < larger.length ; i ++){
+                total[i+1+ smaller.length] = larger[i];
+            }
+            return total;
+        }
+        return new int[0];
     }
 
     /**
@@ -433,7 +476,6 @@ public class AVLTree {
         {
 
             this.left = node;
-            this.rank = 1 + Math.max(right.getHeight(),left.getHeight());
         }
         public IAVLNode getLeft()
         {
@@ -442,7 +484,6 @@ public class AVLTree {
         public void setRight(IAVLNode node)
         {
             this.right = node;
-            this.rank = 1 + Math.max(right.getHeight(),left.getHeight());
         }
         public IAVLNode getRight()
         {
