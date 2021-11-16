@@ -8,6 +8,13 @@
  */
 
 public class AVLTree {
+    private IAVLNode root;
+    private int size;
+
+    public AVLTree(){
+        this.root = null;
+        this.size = 0;
+    }
 
     /**
      * public boolean empty()
@@ -16,21 +23,52 @@ public class AVLTree {
      *
      */
     public boolean empty() {
-        return false; // to be replaced by student code
+        return (this.size == 0); // to be replaced by student code
     }
 
+
+    /** gets a key . returns the node that has this key in case that the key exists in the tree. else, returns the node that we
+     * should insert this key as their son.
+     *
+     *
+     */
+    public IAVLNode getNodeBykey( int key){
+        IAVLNode p = this.root;
+        IAVLNode y = null;
+        while ( (p != null) & (p.getValue()!= null)){
+            y = p;
+            if ( key == p.getKey()){
+                return p;
+            }
+            else if(key < p.getKey()){
+                p = p.getLeft();
+            }
+            else{
+                p = p.getRight();
+            }
+        }
+        return y;
+    }
     /**
      * public String search(int k)
      *
      * Returns the info of an item with key k if it exists in the tree.
      * otherwise, returns null.
+     * getting a result from getnodebykey. if k != key, node doesnt exist and we return null.
      */
     public String search(int k)
     {
-        return "searchDefaultString";  // to be replaced by student code
+        IAVLNode node = getNodeBykey(k);
+        if ( node.getKey() == k){
+            return node.getValue();
+        }
+
+        return null;
     }
 
     /**
+     * check where to insert; then check if father is leaf or not ; then if a leaf check what type of rebalncing.
+     *
      * public int insert(int k, String i)
      *
      * Inserts an item with key k and info i to the AVL tree.
@@ -40,9 +78,194 @@ public class AVLTree {
      * Returns -1 if an item with key k already exists in the tree.
      */
     public int insert(int k, String i) {
-        return 420;	// to be replaced by student code
+        this.size +=1;
+        IAVLNode father = getNodeBykey(k);
+        if ( father == null){
+            IAVLNode node = new AVLNode(i,k);
+            this.root = node;
+            return 0;
+        }
+        else if(father.getKey() == k){
+            return -1;
+        }
+        int numofop = 0;
+        if (!isAleaf(father)){
+            InsertIfFatherIsNotALeaf(father,i,k);
+            numofop +=1;
+        }
+
+        else{
+            IAVLNode x = new AVLNode(i,k);
+            CreateVirtualSonRight(x);
+            CreateVirtualSonLeft(x);
+            x.setParent(father);
+
+            if (k > father.getKey()){
+                father.setRight(x);
+            }
+            else{
+                father.setLeft(x);
+            }
+            father.setHeight(father.getHeight()+1);
+            numofop +=1;
+            boolean isbalanced = false;
+            while (!isbalanced){
+                if ((father.getParent().getHeight()- father.getHeight())>0){
+                    isbalanced = true;
+                }
+                else{
+                    int type = FatherLeafType(father);
+                    if ( type ==1 ){
+                        RebalanceCase1(father);
+                        numofop +=1;
+                        father = father.getParent();
+                    }
+                    else if ( type == 2){
+                        numofop +=1;
+                        RebalanceCase2(father);
+                        isbalanced = true;
+                    }
+                    else if( type ==3){
+                        numofop +=2;
+                        RebalanceCase33(father);
+                        isbalanced = true;
+                    }
+                }
+
+
+
+            }
+        }
+        return numofop;
+
     }
 
+    /**
+     * in cade of an insrtion that the father is not a leaf , this function inserts the new IAVLnode.
+     */
+    public void InsertIfFatherIsNotALeaf(IAVLNode father, String i, int k){
+        IAVLNode x = new AVLNode(i,k);
+        x.setParent(father);
+        CreateVirtualSonLeft(x);
+        CreateVirtualSonRight(x);
+        if (k > father.getKey()){
+            father.setRight(x);
+        }
+        else{
+            father.setLeft(x);
+        }
+    }
+
+    /**
+     * gets here only!! if there is a problem and one of the diffrences iz zero;
+     * returns what type of rebalancing we need to do.
+     */
+    public int FatherLeafType(IAVLNode father){
+        IAVLNode grandfather = father.getParent();
+        int leftdiffrence =grandfather.getHeight()- grandfather.getLeft().getHeight();
+        int rightdiffrence= grandfather.getHeight()- grandfather.getRight().getHeight();
+        if (( (rightdiffrence ==1)&(leftdiffrence == 0)) | ((rightdiffrence == 0)&(leftdiffrence == 1))){
+            return 1;
+        }
+        else if (((grandfather.getHeight()- father.getLeft().getHeight()) == 2) |((grandfather.getHeight()- father.getRight().getHeight()) == 2) ){
+            return 3;
+        }
+        return 2;
+    }
+
+    /**
+     * THIS FUNCTION IS REBALNCING WHEN AFTER PROMOTIONG WE GOT INTO CASE ONE
+     *
+     */
+    public void RebalanceCase1 (IAVLNode father){
+        father.setHeight(father.getHeight()+1);
+    }
+
+    /**
+     *
+     * THIS FUNCTION IS REBALNCING WHEN AFTER PROMOTIONG WE GOT INTO CASE 2
+     */
+    public void RebalanceCase2 ( IAVLNode father){
+        father.getParent().setHeight(father.getParent().getHeight()-1);
+        Rotate(father.getParent(),father);
+
+    }
+    /**
+     *
+     * THIS FUNCTION IS REBALNCING WHEN AFTER PROMOTIONG WE GOT INTO CASE 3
+     */
+    public void RebalanceCase33 ( IAVLNode father){
+        father.setHeight(father.getHeight()-1);
+        father.getParent().setHeight(father.getParent().getHeight()-1);
+        if (( father.getHeight() - father.getRight().getHeight()) == 1){
+            father.getRight().setHeight(father.getRight().getHeight()+1);
+            Rotate(father,father.getRight());
+        }
+        else {
+            father.getLeft().setHeight(father.getLeft().getHeight()+1);
+            Rotate(father,father.getLeft());
+        }
+    }
+
+    /**
+     * ROTATE FATHER AND SON
+      son
+     */
+    public void Rotate(IAVLNode father,IAVLNode son){
+        if (father.getRight() == son){//left rotate
+            father.setRight(son.getLeft());
+            son.setLeft(father);
+            IAVLNode grandf = father.getParent();
+            if (grandf.getKey() > son.getKey()){
+                grandf.setLeft(son);
+            }
+            else{
+                grandf.setRight(son);
+            }
+            son.setParent(grandf);
+            father.setParent(son);
+        }
+        else{//rightrotate
+            father.setLeft(son.getRight());
+            son.setRight(father);
+            IAVLNode grandf = father.getParent();
+            if (grandf.getKey() > son.getKey()){
+                grandf.setLeft(son);
+            }
+            else{
+                grandf.setRight(son);
+            }
+            son.setParent(grandf);
+            father.setParent(son);
+        }
+    }
+    /**
+     *static function that get a node and returns true if this node is a leaf and else false;
+     */
+    public static boolean isAleaf(IAVLNode node){
+        if ((node.getLeft().getValue() == null)&(node.getRight().getValue()==null){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *
+     * gets A IAVLnode and sets his right son to be a virtual leaf.
+     */
+    public void CreateVirtualSonRight(IAVLNode node){
+        IAVLNode son = new AVLNode(null,-1);
+        node.setRight(son);
+    }
+
+    /**
+     *
+     * gets A IAVLnode and sets his left son to be a virtual leaf.
+     */
+    public void CreateVirtualSonLeft(IAVLNode node){
+        IAVLNode son = new AVLNode(null,-1);
+        node.setLeft(son);
+    }
     /**
      * public int delete(int k)
      *
@@ -109,7 +332,7 @@ public class AVLTree {
      */
     public int size()
     {
-        return 422; // to be replaced by student code
+        return this.size; // to be replaced by student code
     }
 
     /**
@@ -119,7 +342,7 @@ public class AVLTree {
      */
     public IAVLNode getRoot()
     {
-        return null;
+        return this.root;
     }
 
     /**
@@ -183,14 +406,15 @@ public class AVLTree {
         private IAVLNode right;
         private IAVLNode left;
         private IAVLNode parent;
+        private int size;
 
-        public AVLNode(String info, int key, IAVLNode right, IAVLNode left,IAVLNode parent){
+        public AVLNode(String info, int key){
             this.info = info;
             this.key = key;
-            this.rank = 1 + Math.max(right.getHeight(),left.getHeight());
-            this.right = right;
-            this.left = left;
-            this.parent = parent;
+            this.rank = 0;
+            this.right = null;
+            this.left = null
+            this.parent = null;
         }
 
         public int getKey()
