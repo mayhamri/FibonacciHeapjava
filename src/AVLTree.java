@@ -22,10 +22,29 @@ public class AVLTree {
      * Returns true if and only if the tree is empty.
      *
      */
+
     public boolean empty() {
         return (this.size == 0); // to be replaced by student code
     }
 
+    /** needs to be deleted
+     *
+     * @param root
+     * @param level
+     */
+    public static void printBinaryTree(IAVLNode root, int level){
+        if(root==null)
+            return;
+        printBinaryTree(root.getRight(), level+1);
+        if(level!=0){
+            for(int i=0;i<level-1;i++)
+                System.out.print("|\t");
+            System.out.println("|-------"+root.getKey());
+        }
+        else
+            System.out.println(root.getKey());
+        printBinaryTree(root.getLeft(), level+1);
+    }
 
     /** gets a key . returns the node that has this key in case that the key exists in the tree. else, returns the node that we
      * should insert this key as their son.
@@ -35,17 +54,21 @@ public class AVLTree {
     public IAVLNode getNodeBykey( int key){
         IAVLNode p = this.root;
         IAVLNode y = null;
-        while ( (p != null) & (p.getValue()!= null)){
-            y = p;
-            if ( key == p.getKey()){
-                return p;
+        while (p != null){
+            if (  (p.getValue()!= null)){
+                y = p;
+                if ( key == p.getKey()){
+                    return p;
+                }
+                else if(key < p.getKey()){
+                    p = p.getLeft();
+                }
+                else{
+                    p = p.getRight();
+                }
             }
-            else if(key < p.getKey()){
-                p = p.getLeft();
-            }
-            else{
-                p = p.getRight();
-            }
+            else{break;}
+
         }
         return y;
     }
@@ -82,6 +105,8 @@ public class AVLTree {
         IAVLNode father = getNodeBykey(k);
         if ( father == null){
             IAVLNode node = new AVLNode(i,k);
+            CreateVirtualSonLeft(node);
+            CreateVirtualSonRight(node);
             this.root = node;
             return 0;
         }
@@ -109,6 +134,10 @@ public class AVLTree {
             numofop +=1;
             boolean isbalanced = false;
             while (!isbalanced){
+                if(father.getParent() == null){
+                    isbalanced = true;
+                    break;
+                }
                 if ((father.getParent().getHeight()- father.getHeight())>0){
                     isbalanced = true;
                 }
@@ -196,7 +225,7 @@ public class AVLTree {
      *
      */
     public void RebalanceCase1 (IAVLNode father){
-        father.setHeight(father.getHeight()+1);
+        father.getParent().setHeight(father.getParent().getHeight()+1);
     }
 
     /**
@@ -263,7 +292,7 @@ public class AVLTree {
      *static function that get a node and returns true if this node is a leaf and else false;
      */
     public static boolean isAleaf(IAVLNode node){
-        if ((node.getLeft().getValue() == null)&(node.getRight().getValue()==null){
+        if ((node.getLeft().getValue() == null)&(node.getRight().getValue()==null)){
             return true;
         }
         return false;
@@ -276,6 +305,7 @@ public class AVLTree {
     public void CreateVirtualSonRight(IAVLNode node){
         IAVLNode son = new AVLNode(null,-1);
         son.setParent(node);
+        son.setHeight(-1);
         node.setRight(son);
     }
 
@@ -285,6 +315,7 @@ public class AVLTree {
      */
     public void CreateVirtualSonLeft(IAVLNode node){
         IAVLNode son = new AVLNode(null,-1);
+        son.setHeight(-1);
         son.setParent(node);
         node.setLeft(son);
     }
@@ -456,7 +487,7 @@ public class AVLTree {
             this.key = key;
             this.rank = 0;
             this.right = null;
-            this.left = null
+            this.left = null;
             this.parent = null;
         }
 
