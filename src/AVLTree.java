@@ -404,9 +404,91 @@ public class AVLTree {
      */
     public int delete(int k)
     {
-        return 421;	// to be replaced by student code
+        IAVLNode delete = getNodeBykey(k);
+        if (delete.getKey() != k){
+            return -1;
+        }
+        int numofop;
+        if (isAleaf(delete)){
+            numofop= this.deleteAleaf(delete);
+        }
+
+        if((!delete.getRight().isRealNode())|(!delete.getLeft().isRealNode())){
+            numofop = this.deleteUnary(delete);
+        }
+        else{
+            numofop =this.delete2sons(delete);
+        }
+        return numofop;
     }
 
+    /**
+     * updats the size in the path to the root after deletion node node.
+     * @param node
+     */
+    public void DecreaseSizeParents(IAVLNode node){
+        IAVLNode x = node.getParent();
+        while (x!= null){
+            x.DecreaseSize();
+            x = x.getParent();
+        }
+    }
+    /**
+     * delets a node that is a leaff
+     * @param delete
+     * @return
+     */
+    public int deleteAleaf(IAVLNode delete){
+        IAVLNode father = delete.getParent();
+        int leftDif = father.getHeight()-father.getLeft().getHeight();
+        int rightDif = father.getHeight()-father.getRight().getHeight();
+        if (IsRightSon(father,delete)){ //case1
+            if ((leftDif == 1)&(rightDif ==1)){
+                CreateVirtualSonRight(father);
+                DecreaseSizeParents(delete);
+            }
+
+
+
+
+
+        }
+        else{
+            if ((leftDif == 1)&(rightDif ==1)){//case1
+                CreateVirtualSonLeft(father);
+                DecreaseSizeParents(delete);
+            }
+
+        }
+
+
+    }
+
+    /**
+     * finds the successor of the node node.
+     * @param node
+     * @return
+     */
+    public IAVLNode Successor(IAVLNode node){
+        if(this.max == node){
+            return null;
+        }
+        if(node.getRight().isRealNode()){
+            IAVLNode p = node;
+            p = p.getRight();
+            while(p.getLeft().isRealNode()){
+                p = p.getLeft();
+            }
+            return p;
+
+        }
+        IAVLNode y = node.getParent();
+        while((y!=null)&(node == y.getRight())){
+            node = y;
+            y = node.getParent();
+        }
+        return y;
+    }
     /**
      * public String min()
      *
@@ -539,6 +621,7 @@ public class AVLTree {
         public int getSize(); //Returns the size of the node (0 for virtual nodes).
         public void UpdateSize(); //Adds 1 to the size of the node.
         public void UpdateSize(int k); //updates size to be k.
+        public  void  DecreaseSize(); //decrease size by1;
     }
 
     /**
@@ -642,6 +725,13 @@ public class AVLTree {
         public void UpdateSize(int k){
             this.size = k;
         }
+        /**
+         * decrease size by 1
+         */
+        public  void  DecreaseSize(){
+            this.size -=1;
+        }
+
     }
 
 }
