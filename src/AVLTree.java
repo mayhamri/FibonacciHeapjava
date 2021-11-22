@@ -193,12 +193,12 @@ public class AVLTree {
                         father = father.getParent();
                     }
                     else if ( type == 2){
-                        numofop +=1;
+                        numofop +=2;
                         RebalanceCase2(father);
                         isbalanced = true;
                     }
                     else if( type ==3){
-                        numofop +=2;
+                        numofop +=5;
                         RebalanceCase33(father);
                         isbalanced = true;
                     }
@@ -723,7 +723,27 @@ public class AVLTree {
      */
     public String[] infoToArray()
     {
-        return new String[55]; // to be replaced by student code
+        if(this.root.getSize() == 0){
+            return new String[0];
+        }
+        return infoToArrayHelp(this.root);
+    }
+
+    public String[] infoToArrayHelp(IAVLNode root){
+        if (root.isRealNode()){
+            String [] smaller = infoToArrayHelp(root.getLeft());
+            String [] larger = infoToArrayHelp(root.getRight());
+            String [] total = new String[smaller.length+larger.length+1];
+            for (int i = 0 ; i < smaller.length ; i ++){
+                total[i] = smaller[i];
+            }
+            total[smaller.length]= root.getValue();
+            for ( int i=0; i < larger.length ; i ++){
+                total[i+1+ smaller.length] = larger[i];
+            }
+            return total;
+        }
+        return new String[0];
     }
 
     /**
