@@ -510,8 +510,6 @@ public class AVLTree {
 
                 if ( type == 2){
                     Rotate(father,son);
-                    son.UpdateSize(father.getSize());
-                    father.UpdateSize(father.getLeft().getSize() + father.getRight().getSize()+1);
                     father.setHeight(father.getHeight()-1);
                     son.setHeight(son.getHeight()+1);
                     numofop +=3;
@@ -519,8 +517,6 @@ public class AVLTree {
                 }
                 if( type == 3){
                     Rotate(father,son);
-                    son.UpdateSize(father.getSize());
-                    father.UpdateSize(father.getLeft().getSize() + father.getRight().getSize()+1);
                     father.setHeight(father.getHeight()-2);
                     numofop +=3;
                     father = father.getParent().getParent();
@@ -538,11 +534,8 @@ public class AVLTree {
                         grandson = son.getLeft();
                     }
                     Rotate(son,grandson);
-                    grandson.UpdateSize(son.getSize());
-                    son.UpdateSize(son.getLeft().getSize() + son.getRight().getSize()+1);
                     Rotate(father,grandson);
-                    grandson.UpdateSize(father.getSize());
-                    father.UpdateSize(father.getLeft().getSize() + father.getRight().getSize()+1);
+
                     father.setHeight(father.getHeight()-2);
                     son.setHeight(son.getHeight()-1);
                     grandson.setHeight(grandson.getHeight()+1);
