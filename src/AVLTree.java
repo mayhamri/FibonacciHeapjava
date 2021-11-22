@@ -442,6 +442,12 @@ public class AVLTree {
                     this.min = root;
                     this.max = root;
                 }
+                else{
+                    this.root = delete.getLeft();
+                    root.setParent(null);
+                    this.min = root;
+                    this.max = root;
+                }
             }
             else{
                 if (delete.getRight().isRealNode()){
@@ -655,9 +661,14 @@ public class AVLTree {
 
         }
         IAVLNode y = node.getParent();
-        while((y!=null)&(node == y.getRight())){
-            node = y;
-            y = node.getParent();
+        while(y!=null) {
+            if (node == y.getRight()) {
+                node = y;
+                y = node.getParent();
+            }
+            else{
+                break;
+            }
         }
         return y;
     }
