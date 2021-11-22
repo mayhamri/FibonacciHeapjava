@@ -549,12 +549,32 @@ public class AVLTree {
         }
         this.updateMinAfterDelete();
         this.updateMaxAfterDelete();
-
-
-
-
         return numofop;
     }
+
+    /**
+     * updates min after deletion
+     */
+
+    public void updateMinAfterDelete(){
+        IAVLNode x = this.root;
+        while(x.getLeft().isRealNode()){
+            x = x.getLeft();
+        }
+        this.min = x;
+    }
+
+    /**
+     * updates max after deletion
+     */
+    public void updateMaxAfterDelete(){
+        IAVLNode x = this.root;
+        while(x.getRight().isRealNode()){
+            x = x.getRight();
+        }
+        this.max = x;
+    }
+
 
     /**
      * returns which type of problem we have. if 0 - no problem. if 1 - case 1 (2,2) , if 2 - case 2((3,1)(1,1))
