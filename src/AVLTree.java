@@ -409,12 +409,20 @@ public class AVLTree {
             return -1;
         }
         int numofop;
+        IAVLNode father = delete.getParent();
         if (isAleaf(delete)){
-            numofop= this.deleteAleaf(delete);
+            if(IsRightSon(father,delete)){
+                CreateVirtualSonRight(father);
+            }
+            else{
+                CreateVirtualSonLeft(father);
+            }
         }
-
         if((!delete.getRight().isRealNode())|(!delete.getLeft().isRealNode())){
-            numofop = this.deleteUnary(delete);
+            if (delete.getRight().isRealNode()){
+                father.setRight(delete.getRight());
+                delete.getRight().setParent(father);
+            }
         }
         else{
             numofop =this.delete2sons(delete);
@@ -433,36 +441,11 @@ public class AVLTree {
             x = x.getParent();
         }
     }
-    /**
-     * delets a node that is a leaff
-     * @param delete
-     * @return
-     */
-    public int deleteAleaf(IAVLNode delete){
-        IAVLNode father = delete.getParent();
-        int leftDif = father.getHeight()-father.getLeft().getHeight();
-        int rightDif = father.getHeight()-father.getRight().getHeight();
-        if (IsRightSon(father,delete)){ //case1
-            if ((leftDif == 1)&(rightDif ==1)){
-                CreateVirtualSonRight(father);
-                DecreaseSizeParents(delete);
-            }
 
 
 
 
 
-        }
-        else{
-            if ((leftDif == 1)&(rightDif ==1)){//case1
-                CreateVirtualSonLeft(father);
-                DecreaseSizeParents(delete);
-            }
-
-        }
-
-
-    }
 
     /**
      * finds the successor of the node node.
