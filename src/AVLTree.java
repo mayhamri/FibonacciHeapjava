@@ -408,28 +408,185 @@ public class AVLTree {
         if (delete.getKey() != k){
             return -1;
         }
-        int numofop;
+        int numofop = 0;
+        boolean changed = false;
+        IAVLNode succsesor = Successor(delete);
+        IAVLNode backupdelete = delete;
         IAVLNode father = delete.getParent();
-        if (isAleaf(delete)){
-            if(IsRightSon(father,delete)){
-                CreateVirtualSonRight(father);
+        if ((delete.getLeft().isRealNode())&(delete.getRight().isRealNode())){
+            delete = succsesor;
+            father = delete.getParent();
+            changed = true;
+        }
+         else if (isAleaf(delete)){
+            if (father == null){
+                this.root = null;
+                this.max = null;
+                this.min = null;
             }
             else{
-                CreateVirtualSonLeft(father);
+                if(IsRightSon(father,delete)){
+                    CreateVirtualSonRight(father);
+                }
+                else{
+                    CreateVirtualSonLeft(father);
+                }
             }
-        }
-        if((!delete.getRight().isRealNode())|(!delete.getLeft().isRealNode())){
-            if (delete.getRight().isRealNode()){
-                father.setRight(delete.getRight());
-                delete.getRight().setParent(father);
-            }
+
         }
         else{
-            numofop =this.delete2sons(delete);
+            if (father == null){
+                if (delete.getRight().isRealNode()){
+                    this.root = delete.getRight();
+                    root.setParent(null);
+                    this.min = root;
+                    this.max = root;
+                }
+            }
+            else{
+                if (delete.getRight().isRealNode()){
+                    father.setRight(delete.getRight());
+                    delete.getRight().setParent(father);
+                }
+                else{
+                    father.setLeft(delete.getLeft());
+                    delete.getLeft().setParent(father);
+                }
+            }
+
         }
+        if(changed){
+            succsesor.setRight(backupdelete.getRight());
+            succsesor.setLeft(backupdelete.getLeft());
+            succsesor.getRight().setParent(succsesor);
+            succsesor.getLeft().setParent(succsesor);
+            if(backupdelete.getParent()!=null){
+                if(IsRightSon(backupdelete.getParent(),backupdelete)){
+                    backupdelete.getParent().setRight(succsesor);
+                    succsesor.setParent(backupdelete.getParent());
+                }
+                else{
+                    backupdelete.getParent().setLeft(succsesor);
+                    succsesor.setParent(backupdelete.getParent());
+                }
+            }
+            else{
+                succsesor.setParent(null);
+                this.root = succsesor;
+            }
+
+        }
+        if ( father == null){
+            return numofop;
+        }
+        int type = CheckCaseAfterDelete(father);
+        while ( type != 0 ){
+            if ( type ==1){
+                father.setHeight(father.getHeight()-1);
+                father = father.getParent();
+                numofop+=1;
+                if (father == null){
+                    break;
+                }
+                type =CheckCaseAfterDelete(father);
+            }
+            else{
+                IAVLNode son ;
+                if(father.getHeight()-father.getRight().getHeight() == 1){
+                    son = father.getRight();
+                }
+                else{
+                    son = father.getLeft();
+                }
+
+                if ( type == 2){
+                    Rotate(father,son);
+                    father.setHeight(father.getHeight()-1);
+                    son.setHeight(son.getHeight()+1);
+                    numofop +=3;
+                    break;
+                }
+                if( type == 3){
+                    Rotate(father,son);
+                    father.setHeight(father.getHeight()-2);
+                    numofop +=3;
+                    father = father.getParent().getParent();
+                    if ( father == null){
+                        break;
+                    }
+                    type = CheckCaseAfterDelete(father);
+                }
+                if ( type ==4){
+                    IAVLNode grandson;
+                    if ( son.getHeight()-son.getRight().getHeight() == 1){
+                        grandson = son.getRight();
+                    }
+                    else{
+                        grandson = son.getLeft();
+                    }
+                    Rotate(son,grandson);
+                    Rotate(father,grandson);
+                    father.setHeight(father.getHeight()-2);
+                    son.setHeight(son.getHeight()-1);
+                    grandson.setHeight(grandson.getHeight()+1);
+                    father = grandson.getParent();
+                    numofop += 6;
+                    if (father == null){
+                        break;
+                    }
+                    type = CheckCaseAfterDelete(father);
+                }
+            }
+        }
+
+
+
         return numofop;
     }
 
+    /**
+     * returns which type of problem we have. if 0 - no problem. if 1 - case 1 (2,2) , if 2 - case 2((3,1)(1,1))
+     * , if 3 - case 3((3,1)(2,1)), if 4 - case 4 ((3,1)(1,2))
+     * @param father
+     * @return
+     */
+    public int CheckCaseAfterDelete(IAVLNode father){
+        int leftdif = father.getHeight()-father.getLeft().getHeight();
+        int rightdif = father.getHeight()-father.getRight().getHeight();
+        if ( (rightdif ==2)&(leftdif ==2)){
+            return 1;
+        }
+        if((leftdif ==3)&(rightdif==1)){
+            IAVLNode son = father.getRight();
+            int leftsondif = son.getHeight()-son.getLeft().getHeight();
+            int rightsondif = son.getHeight() - son.getRight().getHeight();
+            if ( (leftsondif == 1) &(rightsondif == 1)){
+                return 2;
+            }
+            else if((rightsondif ==1)&(leftsondif==2)){
+                return 3;
+            }
+            else if((leftsondif ==1)&(rightsondif ==2)){
+                return 4;
+            }
+
+        }
+        if ((rightdif ==3 )&(leftdif ==1)){
+            IAVLNode son = father.getLeft();
+            int leftsondif = son.getHeight()-son.getLeft().getHeight();
+            int rightsondif = son.getHeight() - son.getRight().getHeight();
+            if((leftsondif ==1) & (rightsondif == 1)){
+                return 2;
+            }
+            if((leftsondif == 1) & (rightsondif == 2)){
+                return 3;
+            }
+             if((rightsondif == 1) & (leftsondif == 2)){
+                return 4;
+            }
+        }
+        return 0 ;
+    }
     /**
      * updats the size in the path to the root after deletion node node.
      * @param node
@@ -544,6 +701,9 @@ public class AVLTree {
      */
     public int size()
     {
+        if ( root == null){
+            return 0;
+        }
         return this.root.getSize(); // to be replaced by student code
     }
 
