@@ -9,11 +9,14 @@
 
 public class AVLTree {
     private IAVLNode root;
-    private int size;
+    private IAVLNode min;
+    private IAVLNode max;
 
     public AVLTree(){
         this.root = null;
-        this.size = 0;
+        this.min = null;
+        this.max = null;
+
     }
 
     /**
@@ -24,7 +27,7 @@ public class AVLTree {
      */
 
     public boolean empty() {
-        return (this.size == 0); // to be replaced by student code
+        return (this.root.getSize() == 0); // to be replaced by student code
     }
 
     /** needs to be deleted
@@ -44,6 +47,32 @@ public class AVLTree {
         else
             System.out.println(root.getKey());
         printBinaryTree(root.getLeft(), level+1);
+    }
+
+    /**
+     * updates the minimum after insertion
+     */
+    public void UpdateMinInsert(IAVLNode newNode){
+        if(this.min == null){
+            this.min = newNode;
+        }
+        if (newNode.getKey() < this.min.getKey()){
+            this.min = newNode;
+        }
+
+    }
+
+    /**
+     * updates the maxium after insertion
+     */
+    public void UpdateMaxInsert(IAVLNode newNode){
+        if(this.max == null){
+            this.max = newNode;
+        }
+        if (newNode.getKey() > this.max.getKey()){
+            this.max = newNode;
+        }
+
     }
 
     /** gets a key . returns the node that has this key in case that the key exists in the tree. else, returns the node that we
@@ -90,6 +119,18 @@ public class AVLTree {
     }
 
     /**
+     * gets the new node after Insertion, and updates the size of the nodes in the tree that needs to be update.
+     * @param node
+     */
+    public void UpdateParentsSize(IAVLNode node){
+        while(node != null){
+            node.UpdateSize();
+            node= node.getParent();
+        }
+
+    }
+
+    /**
      * check where to insert; then check if father is leaf or not ; then if a leaf check what type of rebalncing.
      *
      * public int insert(int k, String i)
@@ -101,13 +142,15 @@ public class AVLTree {
      * Returns -1 if an item with key k already exists in the tree.
      */
     public int insert(int k, String i) {
-        this.size +=1;
         IAVLNode father = getNodeBykey(k);
         if ( father == null){
-            IAVLNode node = new AVLNode(i,k);
-            CreateVirtualSonLeft(node);
-            CreateVirtualSonRight(node);
-            this.root = node;
+            IAVLNode x = new AVLNode(i,k);
+            CreateVirtualSonLeft(x);
+            CreateVirtualSonRight(x);
+            this.root = x;
+            this.UpdateMinInsert(x);
+            this.UpdateMaxInsert(x);
+            this.root.UpdateSize();
             return 0;
         }
         else if(father.getKey() == k){
@@ -116,6 +159,7 @@ public class AVLTree {
         int numofop = 0;
         if (!isAleaf(father)){
             InsertIfFatherIsNotALeaf(father,i,k);
+
         }
 
         else{
@@ -163,7 +207,11 @@ public class AVLTree {
 
 
             }
+            this.UpdateMaxInsert(x);
+            this.UpdateMinInsert(x);
+            this.UpdateParentsSize(x);
         }
+
         return numofop;
 
     }
@@ -182,6 +230,10 @@ public class AVLTree {
         else{
             father.setLeft(x);
         }
+        this.UpdateMaxInsert(x);
+        this.UpdateMinInsert(x);
+        this.UpdateParentsSize(x);
+
     }
 
     /**
@@ -225,6 +277,7 @@ public class AVLTree {
      *
      */
     public void RebalanceCase1 (IAVLNode father){
+
         father.getParent().setHeight(father.getParent().getHeight()+1);
     }
 
@@ -259,7 +312,7 @@ public class AVLTree {
     }
 
     /**
-     * ROTATE FATHER AND SON
+     * ROTATE FATHER AND SON. updates the new size after rotation.
       son
      */
     public void Rotate(IAVLNode father,IAVLNode son){
@@ -283,6 +336,7 @@ public class AVLTree {
                 father.setParent(son);
             }
 
+
         }
         else{//rightrotate
             father.setLeft(son.getRight());
@@ -305,6 +359,8 @@ public class AVLTree {
             }
 
         }
+        son.UpdateSize(father.getSize());
+        father.UpdateSize(father.getLeft().getSize()+father.getRight().getSize()+1);
     }
     /**
      *static function that get a node and returns true if this node is a leaf and else false;
@@ -359,12 +415,7 @@ public class AVLTree {
      */
     public String min()
     {
-        if(this.size ==0 ){
-            return null;
-        }
-        int [] array = this.keysToArray();
-        int k= array[0];
-        return search(k); // to be replaced by student code
+        return this.min.getValue(); // to be replaced by student code
     }
 
     /**
@@ -375,12 +426,7 @@ public class AVLTree {
      */
     public String max()
     {
-        if (this.size == 0){
-            return null;
-        }
-        int [] array = this.keysToArray();
-        int k= array[array.length-1];
-        return search(k);
+      return this.max.getValue();
     }
 
     /**
@@ -391,7 +437,7 @@ public class AVLTree {
      */
     public int[] keysToArray()
     {
-        if(this.size == 0){
+        if(this.root.getSize() == 0){
             return new int[0];
         }
         return KeysToArrayHelp(this.root);
@@ -433,7 +479,7 @@ public class AVLTree {
      */
     public int size()
     {
-        return this.size; // to be replaced by student code
+        return this.root.getSize(); // to be replaced by student code
     }
 
     /**
@@ -490,6 +536,9 @@ public class AVLTree {
         public boolean isRealNode(); // Returns True if this is a non-virtual AVL node.
         public void setHeight(int height); // Sets the height of the node.
         public int getHeight(); // Returns the height of the node (-1 for virtual nodes).
+        public int getSize(); //Returns the size of the node (0 for virtual nodes).
+        public void UpdateSize(); //Adds 1 to the size of the node.
+        public void UpdateSize(int k); //updates size to be k.
     }
 
     /**
@@ -516,6 +565,7 @@ public class AVLTree {
             this.right = null;
             this.left = null;
             this.parent = null;
+            this.size =0;
         }
 
         public int getKey()
@@ -574,6 +624,23 @@ public class AVLTree {
         public int getHeight()
         {
             return this.rank; // to be replaced by student code
+        }
+
+        public int getSize(){
+            return this.size;
+        }
+        /**
+         * updates the size of a node in 1;
+         */
+        public void UpdateSize(){
+            this.size+=1;
+
+        }
+        /**
+         * update size to be k
+         */
+        public void UpdateSize(int k){
+            this.size = k;
         }
     }
 
