@@ -418,7 +418,7 @@ public class AVLTree {
             father = delete.getParent();
             changed = true;
         }
-         else if (isAleaf(delete)){
+        if (isAleaf(delete)){
             if (father == null){
                 this.root = null;
                 this.max = null;
@@ -479,6 +479,8 @@ public class AVLTree {
             else{
                 succsesor.setParent(null);
                 this.root = succsesor;
+                this.root.setHeight(backupdelete.getHeight());
+                this.root.UpdateSize(backupdelete.getSize());
             }
 
         }
