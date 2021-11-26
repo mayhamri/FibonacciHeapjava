@@ -568,10 +568,16 @@ public class AVLTree {
 
     public void updateMinAfterDelete(){
         IAVLNode x = this.root;
-        while(x.getLeft().isRealNode()){
-            x = x.getLeft();
+        if(x == null){
+            this.min = null;
         }
-        this.min = x;
+        else{
+            while(x.getLeft().isRealNode()){
+                x = x.getLeft();
+            }
+            this.min = x;
+        }
+
     }
 
     /**
@@ -579,10 +585,17 @@ public class AVLTree {
      */
     public void updateMaxAfterDelete(){
         IAVLNode x = this.root;
-        while(x.getRight().isRealNode()){
-            x = x.getRight();
+        if(x == null){
+            this.max = null;
         }
-        this.max = x;
+        else{
+            while(x.getRight().isRealNode()){
+                x = x.getRight();
+            }
+            this.max = x;
+
+        }
+
     }
 
 
