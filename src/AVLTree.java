@@ -810,6 +810,32 @@ public class AVLTree {
     public int join(IAVLNode x, AVLTree t)
     {
         int res = Math.abs(this.root.getHeight()-t.root.getHeight())+1;
+        if ((this.root == null)&(t.root == null)){
+            this.root =x;
+            this.min = x;
+            this.max = x;
+            x.UpdateSize(1);
+            CreateVirtualSonLeft(x);
+            CreateVirtualSonRight(x);
+            return res;
+        }
+        if (t.root == null){
+            int k = x.getKey();
+            String i = x.getValue();
+            this.insert(k,i);
+            return res;
+        }
+
+        if(this.root == null){
+            this.root = t.getRoot();
+            this.max = t.max;
+            this.min = t.min;
+            int k = x.getKey();
+            String i = x.getValue();
+            this.insert(k,i);
+            return res;
+
+        }
         if (this.root.getHeight() == t.root.getHeight()){
             if(this.root.getKey() >x.getKey()){
                 x.setRight(this.root);
