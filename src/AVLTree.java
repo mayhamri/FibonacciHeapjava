@@ -856,8 +856,8 @@ public class AVLTree {
     public int join(IAVLNode x, AVLTree t)
     {
 
-        if ((this.root == null)&(t.root == null)){
-            this.root =x;
+        if ((this.root == null)&(t.root == null)){  // checks if the trees are empty
+            this.root =x; // creates new tree that x is its root and it's only node.
             this.min = x;
             this.max = x;
             x.UpdateSize(1);
@@ -865,15 +865,15 @@ public class AVLTree {
             CreateVirtualSonRight(x);
             return 1;
         }
-        if (t.root == null){
+        if (t.root == null){ // checks if the other tree is empty
             int k = x.getKey();
             String i = x.getValue();
-            this.insert(k,i);
+            this.insert(k,i); // insert x to my tree.
             return this.root.getHeight()+1;
         }
 
-        if(this.root == null){
-            this.root = t.getRoot();
+        if(this.root == null){ // checks if this tree is empty
+            this.root = t.getRoot(); // makes this tree to be the other tree, and then insert x.
             this.max = t.max;
             this.min = t.min;
             int k = x.getKey();
@@ -882,19 +882,19 @@ public class AVLTree {
             return t.root.getHeight()+1;
 
         }
-        int res = Math.abs(this.root.getHeight()-t.root.getHeight())+1;
-        if (this.root.getHeight() == t.root.getHeight()){
-            if(this.root.getKey() >x.getKey()){
+        int res = Math.abs(this.root.getHeight()-t.root.getHeight())+1; // calculates the return value .
+        if (this.root.getHeight() == t.root.getHeight()){ // checks if the trees has the same height.
+            if(this.root.getKey() >x.getKey()){ // checks which tree has the larger keys
                 x.setRight(this.root);
                 x.setLeft(t.root);
                 x.setParent(null);
                 this.root.setParent(x);
                 t.root.setParent(x);
-                this.root =x;
+                this.root =x; // makes x to be the root and then addd both trees to be his left and right sons.
                 this.min = t.min;
                 x.UpdateSize(x.getRight().getSize() + x.getLeft().getSize() +1);
             }
-            else{
+            else{ //the other case when t has the larger keys. same as before , replace right and lest sons.
                 x.setRight(t.root);
                 x.setLeft(this.root);
                 x.setParent(null);
@@ -906,36 +906,37 @@ public class AVLTree {
             }
             return res;
         }
-        if (this.root.getHeight() >t.root.getHeight()){
-            if (this.root.getKey() > x.getKey()){
-                this.min = t.min;
-                joinWithOutRebalanceBiggerFirst(this.root,x,t.root);
+        if (this.root.getHeight() >t.root.getHeight()){// case that this tree is higher.
+            if (this.root.getKey() > x.getKey()){ // case that this tree has the larger keys.
+                this.min = t.min; // updates the min to be the new min
+                joinWithOutRebalanceBiggerFirst(this.root,x,t.root); // help function to the case that the higher tree has bigger keys. gets the higher tree first.
             }
             else{
-                this.max = t.max;
-                joinWithOutRebalanceSmallerFirst(this.root,x,t.root);
+                this.max = t.max;// updates the max to be the new max
+                joinWithOutRebalanceSmallerFirst(this.root,x,t.root); // help function to the case that the higher tree has smaller  keys. gets the higher tree first.
             }
         }
 
-        else{
+        else{ // the higher tree is t
             if (t.root.getKey() > x.getKey()){
-                this.max = t.max;
-                joinWithOutRebalanceBiggerFirst(t.root,x,this.root);
+                this.max = t.max;// updates the max to be the new max
+                joinWithOutRebalanceBiggerFirst(t.root,x,this.root);// help function to the case that the higher tree has bigger keys. gets the higher tree first.
             }
             else{
-                this.min = t.min;
-                joinWithOutRebalanceSmallerFirst(t.root,x,this.root);
+                this.min = t.min; // updates the min to be the new min
+                joinWithOutRebalanceSmallerFirst(t.root,x,this.root); // help function to the case that the higher tree has smaller  keys. gets the higher tree first.
             }
 
         }
+        //the help functions joined the trees. (now we need to balance them and find the root.
 
         IAVLNode newRoot = x;
-        while(newRoot.getParent()!= null){
+        while(newRoot.getParent()!= null){ // loop to find the new root of the joined tree
             newRoot = newRoot.getParent();
         }
         this.root = newRoot;
 
-        this.RebalanceAfterJoin(x.getParent(),x);
+        this.RebalanceAfterJoin(x.getParent(),x); // help function the rebalance the tree.
         return res;
     }
 
