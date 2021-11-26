@@ -12,6 +12,7 @@ public class AVLTree {
     private IAVLNode min;
     private IAVLNode max;
 
+
     public AVLTree(){
         this.root = null;
         this.min = null;
@@ -42,7 +43,7 @@ public class AVLTree {
         if(level!=0){
             for(int i=0;i<level-1;i++)
                 System.out.print("|\t");
-            System.out.println("|-------"+root.getKey());
+            System.out.println("|-------"+"**"+root.getKey()+"** "+root.getSize()+' '+root.getHeight());
         }
         else
             System.out.println(root.getKey());
@@ -625,7 +626,7 @@ public class AVLTree {
      * @param node
      */
     public void DecreaseSizeParents(IAVLNode node){
-        IAVLNode x = node.getParent();
+        IAVLNode x = node;
         while (x!= null){
             x.DecreaseSize();
             x = x.getParent();
