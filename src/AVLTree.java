@@ -1,3 +1,5 @@
+import javafx.scene.transform.Rotate;
+
 /**
  *
  * AVLTree
@@ -853,8 +855,29 @@ public class AVLTree {
         }
         this.root = newRoot;
 
-
+        this.RebalanceAfterJoin(x.getParent(),x);
         return res;
+    }
+
+
+    /**
+     * rebalancing the tree after  join
+     * @param
+     */
+    public void RebalanceAfterJoin(IAVLNode father, IAVLNode son){
+        int leftDif = father.getHeight()-father.getLeft().getHeight();
+        int rightDif = father.getHeight() - father.getRight().getHeight();
+        if ( (leftDif == 1)&(rightDif ==1 )){
+            return;
+        }
+        else if( ((rightDif == 2)&(leftDif ==0))|((rightDif == 0 )&(leftDif ==2))){
+            Rotate(father,son);
+            son.setHeight(son.getHeight()+1);
+            father = father.getParent();
+        }
+
+
+
     }
 
     /**
@@ -872,7 +895,7 @@ public class AVLTree {
 
 
     /**
-     * does the join part before the rebalncing in case that the higher tree has the lower keys.
+     * does the join part before the rebalncing in case that the higher tree has the bigger keys.
      * @param t2
      * @param x
      * @param t1
@@ -893,6 +916,30 @@ public class AVLTree {
         c.setLeft(x);
         updateSizeAfterJoin(x);
 
+    }
+
+
+    /**
+     * does the join part before the rebalncing in case that the higher tree has the smaller keys.
+     * @param t1
+     * @param x
+     * @param t2
+     */
+    public static void joinWithOutRebalanceSmallerFirst(IAVLNode t1,IAVLNode x, IAVLNode t2){
+        int h = t2.getHeight();
+        IAVLNode a = t2;
+        IAVLNode b = t1;
+        while ( b.getHeight() > h){
+            b= b.getRight();
+        }
+        x.setLeft(b);
+        x.setRight(a);
+        IAVLNode c = b.getParent();
+        b.setParent(x);
+        a.setParent(x);
+        x.setParent(c);
+        c.setRight(x);
+        updateSizeAfterJoin(x);
     }
 
 
