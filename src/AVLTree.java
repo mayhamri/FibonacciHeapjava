@@ -795,7 +795,40 @@ public class AVLTree {
      */
     public AVLTree[] split(int x)
     {
-        return null;
+        IAVLNode splitter = getNodeBykey(x);
+        AVLTree t2 = new AVLTree();
+        AVLTree t1 = new AVLTree();
+        if (splitter.getRight().isRealNode()){
+            t2.root = splitter.getRight();
+        }
+        if(splitter.getLeft().isRealNode()){
+            t1.root = splitter.getLeft();
+        }
+        IAVLNode father = splitter.getParent();
+        while(father!= null){
+            if(father.getRight() == splitter){
+                AVLTree lefttree = new AVLTree();
+                lefttree.root = father.getLeft();
+                t1.join(father,lefttree);
+            }
+            else{
+                AVLTree righttree = new AVLTree();
+                righttree.root = father.getRight();
+                t2.join(father,righttree);
+            }
+            father = father.getParent();
+            splitter = splitter.getParent();
+        }
+        t1.updateMaxAfterDelete();
+        t1.updateMinAfterDelete();
+        t2.updateMaxAfterDelete();
+        t2.updateMaxAfterDelete();
+        AVLTree [] res = new AVLTree[2];
+        res[0] = t1;
+        res[1] = t2;
+        return res;
+
+
     }
 
     /**
