@@ -177,6 +177,7 @@ public class AVLTree {
             else{
                 father.setLeft(x);
             }
+            this.UpdateParentsSize(x);
             father.setHeight(father.getHeight()+1);
             numofop +=1;
             boolean isbalanced = false;
@@ -212,7 +213,7 @@ public class AVLTree {
             }
             this.UpdateMaxInsert(x);
             this.UpdateMinInsert(x);
-            this.UpdateParentsSize(x);
+
         }
 
         return numofop;
@@ -333,11 +334,13 @@ public class AVLTree {
                 }
                 son.setParent(grandf);
                 father.setParent(son);
+                father.getRight().setParent(father);//changed
             }
             else{
                 this.root = son;
                 son.setParent(null);
                 father.setParent(son);
+                father.getRight().setParent(father);//changed
             }
 
 
@@ -355,11 +358,13 @@ public class AVLTree {
                 }
                 son.setParent(grandf);
                 father.setParent(son);
+                father.getLeft().setParent(father);//changed
             }
             else{
                 this.root = son;
                 son.setParent(null);
                 father.setParent(son);
+                father.getLeft().setParent(father);//changed
             }
 
         }
@@ -913,9 +918,6 @@ public class AVLTree {
         }
 
 
-
-
-
     }
 
     /**
@@ -1013,7 +1015,7 @@ public class AVLTree {
      *
      * This class can and MUST be modified (It must implement IAVLNode).
      */
-    public class AVLNode implements IAVLNode{
+    public static class AVLNode implements IAVLNode{
         private String info;
         private int key;
         private int rank;
