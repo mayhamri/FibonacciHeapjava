@@ -1100,6 +1100,10 @@ public class AVLTree {
         private IAVLNode parent;
         private int size;
 
+        /**
+         *
+         *constructor to a new node with info and key.
+         */
         public AVLNode(String info, int key){
             this.info = info;
             this.key = key;
@@ -1110,45 +1114,84 @@ public class AVLTree {
             this.size =0;
         }
 
+        /**
+         *
+         * @return the key of this node.
+         */
         public int getKey()
         {
+
             return this.key; // to be replaced by student code
         }
 
 
+        /**
+         *
+         * @return the value of this node.
+         */
         public String getValue()
         {
 
             return this.info; // to be replaced by student code
         }
 
+        /**
+         * sets the left son to be this IAVLNODE
+         */
         public void setLeft(IAVLNode node)
         {
 
             this.left = node;
         }
+
+        /**
+         *
+         * RETURNS the leftson. if doesnt exists - return null
+         */
         public IAVLNode getLeft()
         {
             return this.left; // to be replaced by student code
         }
+
+        /**
+         * sets the right son to be this IAVLNODE
+         */
         public void setRight(IAVLNode node)
         {
             this.right = node;
         }
+
+        /**
+         *
+         * RETURNS the righttson. if doesnt exists - return null
+         */
         public IAVLNode getRight()
         {
 
             return this.right; // to be replaced by student code
         }
+
+        /**
+         * sets the parent to be this IAVLNODE
+         */
         public void setParent(IAVLNode node)
         {
 
             this.parent = node; // to be replaced by student code
         }
+        /**
+         *
+         * RETURNS the parent. if doesnt exists - return null
+         */
         public IAVLNode getParent()
         {
             return this.parent; // to be replaced by student code
         }
+
+        /**
+         *
+         * returns false if the node is a virtualson. else, returns true
+         */
         public boolean isRealNode()
         {
 
@@ -1158,16 +1201,29 @@ public class AVLTree {
             return true;
         }
 
+        /**
+         *change this rank to be height.
+         */
         public void setHeight(int height)
         {
             this.rank = height;
             // to be replaced by student code
         }
+
+        /**
+         *
+         * returns the height of this node(the height of this node is its rank)
+         *
+         */
         public int getHeight()
         {
             return this.rank; // to be replaced by student code
         }
 
+        /**
+         * returns the size of the tree that this node is it root.
+         * @return
+         */
         public int getSize(){
             return this.size;
         }
