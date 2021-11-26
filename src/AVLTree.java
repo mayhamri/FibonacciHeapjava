@@ -801,8 +801,102 @@ public class AVLTree {
      */
     public int join(IAVLNode x, AVLTree t)
     {
-        return -1;
+        int res = Math.abs(this.root.getHeight()-t.root.getHeight())+1;
+        if (this.root.getHeight() == t.root.getHeight()){
+            if(this.root.getKey() >x.getKey()){
+                x.setRight(this.root);
+                x.setLeft(t.root);
+                x.setParent(null);
+                this.root.setParent(x);
+                t.root.setParent(x);
+                this.root =x;
+                this.min = t.min;
+                x.UpdateSize(x.getRight().getSize() + x.getLeft().getSize() +1);
+            }
+            else{
+                x.setRight(t.root);
+                x.setLeft(this.root);
+                x.setParent(null);
+                this.root.setParent(x);
+                t.root.setParent(x);
+                this.root =x;
+                this.max = t.max;
+                x.UpdateSize(x.getRight().getSize() + x.getLeft().getSize() +1);
+            }
+            return res;
+        }
+        if (this.root.getHeight() >t.root.getHeight()){
+            if (this.root.getKey() > x.getKey()){
+                this.min = t.min;
+                joinWithOutRebalanceBiggerFirst(this.root,x,t.root);
+            }
+            else{
+                this.max = t.max;
+                joinWithOutRebalanceSmallerFirst(this.root,x,t.root);
+            }
+        }
+
+        else{
+            if (t.root.getKey() > x.getKey()){
+                this.max = t.max;
+                joinWithOutRebalanceBiggerFirst(t.root,x,this.root);
+            }
+            else{
+                this.min = t.min;
+                joinWithOutRebalanceSmallerFirst(t.root,x,this.root);
+            }
+
+        }
+        IAVLNode newRoot = x;
+        while(newRoot.getParent()!= null){
+            newRoot = newRoot.getParent();
+        }
+        this.root = newRoot;
+
+
+        return res;
     }
+
+    /**
+     * updates the sizes up to the root after joining 2 trees into 1 .
+     * @param x
+     */
+    public static void  updateSizeAfterJoin(IAVLNode x){
+        IAVLNode c = x.getParent();
+        x.UpdateSize(x.getLeft().getSize() + x.getRight().getSize()+1);
+        while(c!= null){
+            c.UpdateSize(c.getRight().getSize() + c.getLeft().getSize()+1);
+            c = c.getParent();
+        }
+    }
+
+
+    /**
+     * does the join part before the rebalncing in case that the higher tree has the lower keys.
+     * @param t2
+     * @param x
+     * @param t1
+     */
+    public static void joinWithOutRebalanceBiggerFirst(IAVLNode t2,IAVLNode x, IAVLNode t1){
+        int h = t1.getHeight();
+        IAVLNode a = t1;
+        IAVLNode b = t2;
+        while ( b.getHeight() > h ){
+            b= b.getLeft();
+        }
+        x.setRight(b);
+        x.setLeft(a);
+        IAVLNode c = b.getParent();
+        a.setParent(x);
+        b.setParent(x);
+        x.setParent(c);
+        c.setLeft(x);
+        updateSizeAfterJoin(x);
+
+    }
+
+
+
 
     /**
      * public interface IAVLNode
