@@ -809,7 +809,7 @@ public class AVLTree {
      */
     public int join(IAVLNode x, AVLTree t)
     {
-        int res = Math.abs(this.root.getHeight()-t.root.getHeight())+1;
+
         if ((this.root == null)&(t.root == null)){
             this.root =x;
             this.min = x;
@@ -817,13 +817,13 @@ public class AVLTree {
             x.UpdateSize(1);
             CreateVirtualSonLeft(x);
             CreateVirtualSonRight(x);
-            return res;
+            return 1;
         }
         if (t.root == null){
             int k = x.getKey();
             String i = x.getValue();
             this.insert(k,i);
-            return res;
+            return this.root.getHeight()+1;
         }
 
         if(this.root == null){
@@ -833,9 +833,10 @@ public class AVLTree {
             int k = x.getKey();
             String i = x.getValue();
             this.insert(k,i);
-            return res;
+            return t.root.getHeight()+1;
 
         }
+        int res = Math.abs(this.root.getHeight()-t.root.getHeight())+1;
         if (this.root.getHeight() == t.root.getHeight()){
             if(this.root.getKey() >x.getKey()){
                 x.setRight(this.root);
@@ -881,6 +882,7 @@ public class AVLTree {
             }
 
         }
+
         IAVLNode newRoot = x;
         while(newRoot.getParent()!= null){
             newRoot = newRoot.getParent();
@@ -980,6 +982,7 @@ public class AVLTree {
         b.setParent(x);
         x.setParent(c);
         c.setLeft(x);
+        x.setHeight(h+1);
         updateSizeAfterJoin(x);
 
     }
@@ -1005,6 +1008,7 @@ public class AVLTree {
         a.setParent(x);
         x.setParent(c);
         c.setRight(x);
+        x.setHeight(h+1);
         updateSizeAfterJoin(x);
     }
 
