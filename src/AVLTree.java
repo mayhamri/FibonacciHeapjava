@@ -219,6 +219,7 @@ public class AVLTree {
 
     }
 
+
     /**
      * in cade of an insrtion that the father is not a leaf , this function inserts the new IAVLnode.
      */
@@ -873,8 +874,45 @@ public class AVLTree {
         else if( ((rightDif == 2)&(leftDif ==0))|((rightDif == 0 )&(leftDif ==2))){
             Rotate(father,son);
             son.setHeight(son.getHeight()+1);
-            father = father.getParent();
+            father = son;
         }
+        else{
+            father.setHeight(father.getHeight() +1);
+        }
+        boolean isbalanced = false;
+
+        while (!isbalanced){
+            if(father.getParent() == null){
+                isbalanced = true;
+                break;
+            }
+            if ((father.getParent().getHeight()- father.getHeight())>0){
+                isbalanced = true;
+            }
+            else{
+                int type = FatherLeafType(father);
+                if ( type ==1 ){
+                    RebalanceCase1(father);
+
+                    father = father.getParent();
+                }
+                else if ( type == 2){
+
+                    RebalanceCase2(father);
+                    isbalanced = true;
+                }
+                else if( type ==3){
+
+                    RebalanceCase33(father);
+                    isbalanced = true;
+                }
+            }
+
+
+
+        }
+
+
 
 
 
