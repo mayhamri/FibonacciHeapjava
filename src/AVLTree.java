@@ -30,7 +30,7 @@ public class AVLTree {
      */
 
     public boolean empty() {
-        return (this.root.getSize() == 0); // to be replaced by student code
+        return this.root == null ; // to be replaced by student code
     }
 
     /** needs to be deleted
@@ -114,6 +114,9 @@ public class AVLTree {
     public String search(int k)
     {
         IAVLNode node = getNodeBykey(k);
+        if( node == null){
+            return null;
+        }
         if ( node.getKey() == k){
             return node.getValue();
         }
@@ -414,6 +417,9 @@ public class AVLTree {
     public int delete(int k)
     {
         IAVLNode delete = getNodeBykey(k);
+        if( delete == null){
+            return -1;
+        }
         if (delete.getKey() != k){
             return -1;
         }
