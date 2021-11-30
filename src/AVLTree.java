@@ -112,14 +112,15 @@ public class AVLTree {
      * Returns the info of an item with key k if it exists in the tree.
      * otherwise, returns null.
      * getting a result from getnodebykey. if k != key, node doesnt exist and we return null.
+     * O(log n)
      */
     public String search(int k)
     {
-        IAVLNode node = getNodeBykey(k);
-        if( node == null){
+        IAVLNode node = getNodeBykey(k);//gets the node that k is it's key. O(log n)
+        if( node == null){ //checks if the tree is empty
             return null;
         }
-        if ( node.getKey() == k){
+        if ( node.getKey() == k){//checks if k in the tree(only if the keys are equal)
             return node.getValue();
         }
 
@@ -148,10 +149,11 @@ public class AVLTree {
      * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
      * A promotion/rotation counts as one re-balance operation, double-rotation is counted as 2.
      * Returns -1 if an item with key k already exists in the tree.
+     * O(log n)
      */
     public int insert(int k, String i) {
-        IAVLNode father = getNodeBykey(k);
-        if ( father == null){
+        IAVLNode father = getNodeBykey(k); //gets the node that should be the father
+        if ( father == null){ //the tree was empty
             IAVLNode x = new AVLNode(i,k);
             CreateVirtualSonLeft(x);
             CreateVirtualSonRight(x);
@@ -161,63 +163,63 @@ public class AVLTree {
             this.root.UpdateSize();
             return 0;
         }
-        else if(father.getKey() == k){
+        else if(father.getKey() == k){//make sure k is not a key in the tree.
             return -1;
         }
         int numofop = 0;
-        if (!isAleaf(father)){
-            InsertIfFatherIsNotALeaf(father,i,k);
+        if (!isAleaf(father)){ //if father is not a leaf , needs to insert father is not a leaf.
+            InsertIfFatherIsNotALeaf(father,i,k); //O(log n) . inserts the new node.
 
         }
 
-        else{
-            IAVLNode x = new AVLNode(i,k);
+        else{ //father is a leaf!
+            IAVLNode x = new AVLNode(i,k); //the new node we insert
             CreateVirtualSonRight(x);
             CreateVirtualSonLeft(x);
             x.setParent(father);
 
-            if (k > father.getKey()){
+            if (k > father.getKey()){ //rightson
                 father.setRight(x);
             }
             else{
-                father.setLeft(x);
+                father.setLeft(x);//leftson
             }
-            this.UpdateParentsSize(x);
-            father.setHeight(father.getHeight()+1);
-            numofop +=1;
-            boolean isbalanced = false;
-            while (!isbalanced){
-                if(father.getParent() == null){
+            this.UpdateParentsSize(x); //O(log n).
+            father.setHeight(father.getHeight()+1); //promote father
+            numofop +=1;//the promote
+            boolean isbalanced = false;//indicates whether the tree got balanced
+            while (!isbalanced){ //while the tree is not balanced. O(log n) WC.
+                if(father.getParent() == null){//we got to the root
                     isbalanced = true;
                     break;
                 }
-                if ((father.getParent().getHeight()- father.getHeight())>0){
+                if ((father.getParent().getHeight()- father.getHeight())>0){//the tree is balanced.
                     isbalanced = true;
                 }
-                else{
-                    int type = FatherLeafType(father);
+                else{ //tree is still not balanced.
+                    int type = FatherLeafType(father); // type of balance we need to do.O(1)
                     if ( type ==1 ){
-                        RebalanceCase1(father);
+                        RebalanceCase1(father);//O(1)
                         numofop +=1;
-                        father = father.getParent();
+                        father = father.getParent();//continue the check
                     }
                     else if ( type == 2){
                         numofop +=2;
-                        RebalanceCase2(father);
-                        isbalanced = true;
+                        RebalanceCase2(father); //O(1)
+                        isbalanced = true; //finished ! the tree is balanced
                     }
                     else if( type ==3){
                         numofop +=5;
-                        RebalanceCase33(father);
-                        isbalanced = true;
+                        RebalanceCase33(father);//O(1)
+                        isbalanced = true;// finished ! the tree is balanced
                     }
                 }
 
 
 
             }
-            this.UpdateMaxInsert(x);
-            this.UpdateMinInsert(x);
+            this.UpdateMaxInsert(x);//updates min O(1)
+            this.UpdateMinInsert(x);//updated max O(1)
 
         }
 
