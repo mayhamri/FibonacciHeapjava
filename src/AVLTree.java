@@ -54,12 +54,13 @@ public class AVLTree {
 
     /**
      * updates the minimum after insertion
+     * O(1)
      */
-    public void UpdateMinInsert(IAVLNode newNode){
+    private void UpdateMinInsert(IAVLNode newNode){
         if(this.min == null){
             this.min = newNode;
         }
-        if (newNode.getKey() < this.min.getKey()){
+        if (newNode.getKey() < this.min.getKey()){//checks if the newnode is smaller than current min
             this.min = newNode;
         }
 
@@ -67,12 +68,13 @@ public class AVLTree {
 
     /**
      * updates the maxium after insertion
+     * O(1)
      */
-    public void UpdateMaxInsert(IAVLNode newNode){
+    private void UpdateMaxInsert(IAVLNode newNode){
         if(this.max == null){
             this.max = newNode;
         }
-        if (newNode.getKey() > this.max.getKey()){
+        if (newNode.getKey() > this.max.getKey()){//checks if the newnode is bigger than current max
             this.max = newNode;
         }
 
@@ -126,11 +128,11 @@ public class AVLTree {
 
     /**
      * gets the new node after Insertion, and updates the size of the nodes in the tree that needs to be update.
-     * @param node
+     * O(logn)
      */
-    public void UpdateParentsSize(IAVLNode node){
-        while(node != null){
-            node.UpdateSize();
+    private void UpdateParentsSize(IAVLNode node){
+        while(node != null){//goes up to the root
+            node.UpdateSize(); //node.size = node.size +1
             node= node.getParent();
         }
 
@@ -226,21 +228,22 @@ public class AVLTree {
 
     /**
      * in cade of an insrtion that the father is not a leaf , this function inserts the new IAVLnode.
+     * O(log n)
      */
-    public void InsertIfFatherIsNotALeaf(IAVLNode father, String i, int k){
-        IAVLNode x = new AVLNode(i,k);
+    private void InsertIfFatherIsNotALeaf(IAVLNode father, String i, int k){
+        IAVLNode x = new AVLNode(i,k); //creates the new node
         x.setParent(father);
         CreateVirtualSonLeft(x);
         CreateVirtualSonRight(x);
-        if (k > father.getKey()){
+        if (k > father.getKey()){//x is the new right son
             father.setRight(x);
         }
-        else{
+        else{//x is the new left son
             father.setLeft(x);
         }
-        this.UpdateMaxInsert(x);
-        this.UpdateMinInsert(x);
-        this.UpdateParentsSize(x);
+        this.UpdateMaxInsert(x);//updates max O(1)
+        this.UpdateMinInsert(x);//updates min O(1)
+        this.UpdateParentsSize(x); //updates size O(log n)
 
     }
 
@@ -510,7 +513,7 @@ public class AVLTree {
         }
         DecreaseSizeParents(father);//updates the size of the parents after the deletion.
         int type = CheckCaseAfterDelete(father); //returns which type of rebalanceing we need to do. O(1).
-        while ( type != 0 ){//while the tree is not balanced.
+        while ( type != 0 ){//while the tree is not balanced. O(logn) iterations WC
             if ( type ==1){
                 father.setHeight(father.getHeight()-1); //demote
                 father = father.getParent();//continue the check
@@ -569,8 +572,8 @@ public class AVLTree {
                 }
             }
         }
-        this.updateMinAfterDelete(); //update min
-        this.updateMaxAfterDelete();//update max
+        this.updateMinAfterDelete(); //update min O(logn)
+        this.updateMaxAfterDelete();//update max o(log n)
         return numofop;
     }
 
