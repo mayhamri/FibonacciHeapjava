@@ -273,12 +273,10 @@ public class AVLTree {
     /**
      *
      * returns true if son is a right son of father.
+     * O(1)
      */
-    public boolean IsRightSon(IAVLNode father, IAVLNode son){
-        if (father.getKey() > son.getKey()){
-            return false;
-        }
-        return true;
+    private boolean IsRightSon(IAVLNode father, IAVLNode son){
+        return (father.getKey() < son.getKey());
     }
 
     /**
@@ -380,6 +378,7 @@ public class AVLTree {
     }
     /**
      *static function that get a node and returns true if this node is a leaf and else false;
+     * O(1)
      */
     private static boolean isAleaf(IAVLNode node){
         if((node.getRight()==null)||(node.getLeft()==null)){
@@ -419,33 +418,34 @@ public class AVLTree {
      * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
      * A promotion/rotation counts as one re-balance operation, double-rotation is counted as 2.
      * Returns -1 if an item with key k was not found in the tree.
+     * O(log n)
      */
     public int delete(int k)
     {
         IAVLNode delete = getNodeBykey(k);
-        if( delete == null){
+        if( delete == null){ //makes sure the tree is not empty
             return -1;
         }
-        if (delete.getKey() != k){
+        if (delete.getKey() != k){ //makes sure that theres a node that his key is k in this tree.
             return -1;
         }
         int numofop = 0;
-        boolean changed = false;
+        boolean changed = false; //indicites whether we deleted the successor or not.
         IAVLNode succsesor = Successor(delete);
-        IAVLNode backupdelete = delete;
+        IAVLNode backupdelete = delete; //makes sure that we have a backup of the deleted node.
         IAVLNode father = delete.getParent();
-        if ((delete.getLeft().isRealNode())&&(delete.getRight().isRealNode())){
-            delete = succsesor;
+        if ((delete.getLeft().isRealNode())&&(delete.getRight().isRealNode())){ //checks if the node has 2 sons, if so replace it with its successor
+            delete = succsesor; //now we want to delete the successor.
             father = delete.getParent();
             changed = true;
         }
         if (isAleaf(delete)){
-            if (father == null){
+            if (father == null){ //checks if the tree is empty
                 this.root = null;
                 this.max = null;
                 this.min = null;
             }
-            else{
+            else{//deletes node - makes it virtual son.
                 if(IsRightSon(father,delete)){
                     CreateVirtualSonRight(father);
                 }
@@ -455,22 +455,22 @@ public class AVLTree {
             }
 
         }
-        else{
-            if (father == null){
-                if (delete.getRight().isRealNode()){
+        else{//delete is unary
+            if (father == null){ //checks if the tree is empty
+                if (delete.getRight().isRealNode()){ //delets has only right son
                     this.root = delete.getRight();
                     root.setParent(null);
                     this.min = root;
                     this.max = root;
                 }
-                else{
+                else{//delete onlt has left son
                     this.root = delete.getLeft();
                     root.setParent(null);
                     this.min = root;
                     this.max = root;
                 }
             }
-            else{
+            else{ //deletes the unary node.
                 if (delete.getRight().isRealNode()){
                     father.setRight(delete.getRight());
                     delete.getRight().setParent(father);
@@ -482,7 +482,7 @@ public class AVLTree {
             }
 
         }
-        if(changed){
+        if(changed){ //replace delete with successor
             succsesor.setRight(backupdelete.getRight());
             succsesor.setLeft(backupdelete.getLeft());
             succsesor.getRight().setParent(succsesor);
@@ -497,7 +497,7 @@ public class AVLTree {
                     succsesor.setParent(backupdelete.getParent());
                 }
             }
-            else{
+            else{ //backupdelete perant is null
                 succsesor.setParent(null);
                 this.root = succsesor;
                 this.root.setHeight(backupdelete.getHeight());
@@ -505,23 +505,23 @@ public class AVLTree {
             }
 
         }
-        if ( father == null){
+        if ( father == null){//finished.
             return numofop;
         }
-        DecreaseSizeParents(father);
-        int type = CheckCaseAfterDelete(father);
-        while ( type != 0 ){
+        DecreaseSizeParents(father);//updates the size of the parents after the deletion.
+        int type = CheckCaseAfterDelete(father); //returns which type of rebalanceing we need to do. O(1).
+        while ( type != 0 ){//while the tree is not balanced.
             if ( type ==1){
-                father.setHeight(father.getHeight()-1);
-                father = father.getParent();
+                father.setHeight(father.getHeight()-1); //demote
+                father = father.getParent();//continue the check
                 numofop+=1;
-                if (father == null){
+                if (father == null){ //if we got to root - break.
                     break;
                 }
-                type =CheckCaseAfterDelete(father);
+                type =CheckCaseAfterDelete(father);//updates new type
             }
             else{
-                IAVLNode son ;
+                IAVLNode son ; //checks which son has the BF 1.
                 if(father.getHeight()-father.getRight().getHeight() == 1){
                     son = father.getRight();
                 }
@@ -529,25 +529,25 @@ public class AVLTree {
                     son = father.getLeft();
                 }
 
-                if ( type == 2){
+                if ( type == 2){ //rebalance after type 2
                     Rotate(father,son);
-                    father.setHeight(father.getHeight()-1);
-                    son.setHeight(son.getHeight()+1);
+                    father.setHeight(father.getHeight()-1);//demote
+                    son.setHeight(son.getHeight()+1);//promote
                     numofop +=3;
-                    break;
+                    break; //in this case, the tree is balanced.
                 }
-                if( type == 3){
+                if( type == 3){ //rebalance after type 3
                     Rotate(father,son);
-                    father.setHeight(father.getHeight()-2);
+                    father.setHeight(father.getHeight()-2); // 2 demote
                     numofop +=3;
-                    father = father.getParent().getParent();
-                    if ( father == null){
+                    father = father.getParent().getParent();//continue the check
+                    if ( father == null){ // break if we got to the root
                         break;
                     }
-                    type = CheckCaseAfterDelete(father);
+                    type = CheckCaseAfterDelete(father);//checks the new type
                 }
-                if ( type ==4){
-                    IAVLNode grandson;
+                if ( type ==4){//rebalance after type 4
+                    IAVLNode grandson; //checks which grandSon has the 1 BF .
                     if ( son.getHeight()-son.getRight().getHeight() == 1){
                         grandson = son.getRight();
                     }
@@ -557,20 +557,20 @@ public class AVLTree {
                     Rotate(son,grandson);
                     Rotate(father,grandson);
 
-                    father.setHeight(father.getHeight()-2);
-                    son.setHeight(son.getHeight()-1);
-                    grandson.setHeight(grandson.getHeight()+1);
-                    father = grandson.getParent();
+                    father.setHeight(father.getHeight()-2);//2 demotes
+                    son.setHeight(son.getHeight()-1);//1 demote
+                    grandson.setHeight(grandson.getHeight()+1);//promote
+                    father = grandson.getParent();//continue the check
                     numofop += 6;
-                    if (father == null){
+                    if (father == null){ // break if we got to the root
                         break;
                     }
-                    type = CheckCaseAfterDelete(father);
+                    type = CheckCaseAfterDelete(father);//checks the new type
                 }
             }
         }
-        this.updateMinAfterDelete();
-        this.updateMaxAfterDelete();
+        this.updateMinAfterDelete(); //update min
+        this.updateMaxAfterDelete();//update max
         return numofop;
     }
 
