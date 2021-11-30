@@ -381,11 +381,11 @@ public class AVLTree {
     /**
      *static function that get a node and returns true if this node is a leaf and else false;
      */
-    public static boolean isAleaf(IAVLNode node){
-        if ((node.getLeft().getValue() == null)&&(node.getRight().getValue()==null)){
-            return true;
+    private static boolean isAleaf(IAVLNode node){
+        if((node.getRight()==null)||(node.getLeft()==null)){
+            return false;
         }
-        return false;
+        return (node.getRight().isRealNode())&&(node.getLeft().isRealNode());
     }
 
     /**
@@ -616,31 +616,30 @@ public class AVLTree {
     /**
      * returns which type of problem we have. if 0 - no problem. if 1 - case 1 (2,2) , if 2 - case 2((3,1)(1,1))
      * , if 3 - case 3((3,1)(2,1)), if 4 - case 4 ((3,1)(1,2))
-     * @param father
-     * @return
+     * O(1)
      */
-    public int CheckCaseAfterDelete(IAVLNode father){
-        int leftdif = father.getHeight()-father.getLeft().getHeight();
-        int rightdif = father.getHeight()-father.getRight().getHeight();
-        if ( (rightdif ==2)&&(leftdif ==2)){
+    private int CheckCaseAfterDelete(IAVLNode father){
+        int leftdif = father.getHeight()-father.getLeft().getHeight();//left BF
+        int rightdif = father.getHeight()-father.getRight().getHeight();//rightBF
+        if ( (rightdif ==2)&&(leftdif ==2)){ //BF(2,2) up to symmetric
             return 1;
         }
-        if((leftdif ==3)&&(rightdif==1)){
+        if((leftdif ==3)&&(rightdif==1)){ //BF(3,1) up to symmetric
             IAVLNode son = father.getRight();
             int leftsondif = son.getHeight()-son.getLeft().getHeight();
             int rightsondif = son.getHeight() - son.getRight().getHeight();
-            if ( (leftsondif == 1) &&(rightsondif == 1)){
+            if ( (leftsondif == 1) &&(rightsondif == 1)){ //(1,1) up to symmetric
                 return 2;
             }
-            else if((rightsondif ==1)&&(leftsondif==2)){
+            else if((rightsondif ==1)&&(leftsondif==2)){//(1,2) up to symmetric
                 return 3;
             }
-            else if((leftsondif ==1)&&(rightsondif ==2)){
+            else if((leftsondif ==1)&&(rightsondif ==2)){//(2,1) up to symmetric
                 return 4;
             }
 
         }
-        if ((rightdif ==3 )&&(leftdif ==1)){
+        if ((rightdif ==3 )&&(leftdif ==1)){ //symmetric to the prev condition
             IAVLNode son = father.getLeft();
             int leftsondif = son.getHeight()-son.getLeft().getHeight();
             int rightsondif = son.getHeight() - son.getRight().getHeight();
@@ -654,17 +653,17 @@ public class AVLTree {
                 return 4;
             }
         }
-        return 0 ;
+        return 0 ; //we didnt find any problem.
     }
     /**
      * updats the size in the path to the root after deletion node node.
-     * @param node
+     * O(log n )
      */
-    public void DecreaseSizeParents(IAVLNode node){
+    private void DecreaseSizeParents(IAVLNode node){
         IAVLNode x = node;
-        while (x!= null){
-            x.DecreaseSize();
-            x = x.getParent();
+        while (x!= null){ //O(log n)
+            x.DecreaseSize(); //x.size = x.size -1
+            x = x.getParent(); //goes up to the root
         }
     }
 
@@ -675,24 +674,24 @@ public class AVLTree {
 
     /**
      * finds the successor of the node node.
-     * @param node
-     * @return
+     * O(log n)
+     *
      */
-    public IAVLNode Successor(IAVLNode node){
-        if(this.max == node){
+    private IAVLNode Successor(IAVLNode node){
+        if(this.max == node){ //no successor
             return null;
         }
-        if(node.getRight().isRealNode()){
+        if(node.getRight().isRealNode()){//checks if this node has a right son .
             IAVLNode p = node;
             p = p.getRight();
-            while(p.getLeft().isRealNode()){
+            while(p.getLeft().isRealNode()){//O(log n)
                 p = p.getLeft();
             }
             return p;
 
         }
         IAVLNode y = node.getParent();
-        while(y!=null) {
+        while(y!=null) {//node doesnt have a right son.  O(log n )
             if (node == y.getRight()) {
                 node = y;
                 y = node.getParent();
@@ -708,6 +707,7 @@ public class AVLTree {
      *
      * Returns the info of the item with the smallest key in the tree,
      * or null if the tree is empty.
+     * O(1)
      */
     public String min()
     {
@@ -719,6 +719,7 @@ public class AVLTree {
      *
      * Returns the info of the item with the largest key in the tree,
      * or null if the tree is empty.
+     * O(1)
      */
     public String max()
     {
@@ -730,30 +731,35 @@ public class AVLTree {
      *
      * Returns a sorted array which contains all keys in the tree,
      * or an empty array if the tree is empty.
+     * O(nlogn)
      */
     public int[] keysToArray()
     {
-        if(this.root.getSize() == 0){
+        if(this.root.getSize() == 0){ //checks if the tree is empty
             return new int[0];
         }
-        return KeysToArrayHelp(this.root);
+        return KeysToArrayHelp(this.root);//O(nlogn)
     }
 
-    public int[] KeysToArrayHelp(IAVLNode root){
+    /**
+     * help recursive function to keys to array
+     *O( n log n)
+     */
+    private int[] KeysToArrayHelp(IAVLNode root){
         if (root.isRealNode()){
             int [] smaller = KeysToArrayHelp(root.getLeft());
             int [] larger = KeysToArrayHelp(root.getRight());
             int [] total = new int[smaller.length+larger.length+1];
-            for (int i = 0 ; i < smaller.length ; i ++){
+            for (int i = 0 ; i < smaller.length ; i ++){//insert the smaller part to the array
                 total[i] = smaller[i];
             }
-            total[smaller.length]= root.getKey();
-            for ( int i=0; i < larger.length ; i ++){
+            total[smaller.length]= root.getKey();//insert current root key to the array
+            for ( int i=0; i < larger.length ; i ++){//insert the bigger part to the array
                 total[i+1+ smaller.length] = larger[i];
             }
             return total;
         }
-        return new int[0];
+        return new int[0];//root is not a real node, so we return empty array.
     }
 
     /**
@@ -762,49 +768,56 @@ public class AVLTree {
      * Returns an array which contains all info in the tree,
      * sorted by their respective keys,
      * or an empty array if the tree is empty.
+     * O(nlogn)
      */
     public String[] infoToArray()
     {
-        if(this.root.getSize() == 0){
+        if(this.root.getSize() == 0){ //checks if the tree is not empty
             return new String[0];
         }
-        return infoToArrayHelp(this.root);
+        return infoToArrayHelp(this.root); //O(nlogn)
     }
 
-    public String[] infoToArrayHelp(IAVLNode root){
+    /**
+     * help recursive function to info to array
+     * O(nlogn)
+     */
+    private String[] infoToArrayHelp(IAVLNode root){
         if (root.isRealNode()){
             String [] smaller = infoToArrayHelp(root.getLeft());
             String [] larger = infoToArrayHelp(root.getRight());
             String [] total = new String[smaller.length+larger.length+1];
-            for (int i = 0 ; i < smaller.length ; i ++){
+            for (int i = 0 ; i < smaller.length ; i ++){ //insert the smaller part to the array
                 total[i] = smaller[i];
             }
-            total[smaller.length]= root.getValue();
+            total[smaller.length]= root.getValue(); //insert current root value to the array
             for ( int i=0; i < larger.length ; i ++){
-                total[i+1+ smaller.length] = larger[i];
+                total[i+1+ smaller.length] = larger[i];//insert the bigger part to the array
             }
             return total;
         }
-        return new String[0];
+        return new String[0]; //root is not a real node, so we return empty array.
     }
 
     /**
      * public int size()
      *
      * Returns the number of nodes in the tree.
+     * O(1)
      */
     public int size()
     {
-        if ( root == null){
+        if ( root == null){ //checks if tree is empty
             return 0;
         }
-        return this.root.getSize(); // to be replaced by student code
+        return this.root.getSize(); //tree not empty
     }
 
     /**
      * public int getRoot()
      *
      * Returns the root AVL node, or null if the tree is empty
+     * O(1)
      */
     public IAVLNode getRoot()
     {
