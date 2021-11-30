@@ -576,35 +576,37 @@ public class AVLTree {
 
     /**
      * updates min after deletion
+     * O(log n )
      */
 
-    public void updateMinAfterDelete(){
+    private void updateMinAfterDelete(){
         IAVLNode x = this.root;
-        if(x == null){
+        if(x == null){//checks if thr tree is empty
             this.min = null;
         }
-        else{
-            while(x.getLeft().isRealNode()){
+        else{// tree is not empty
+            while(x.getLeft().isRealNode()){//go left to the min
                 x = x.getLeft();
             }
-            this.min = x;
+            this.min = x;//updates min
         }
 
     }
 
     /**
      * updates max after deletion
+     * O(log n )
      */
-    public void updateMaxAfterDelete(){
+    private void updateMaxAfterDelete(){
         IAVLNode x = this.root;
-        if(x == null){
+        if(x == null){ //checks if thr tree is empty
             this.max = null;
         }
-        else{
-            while(x.getRight().isRealNode()){
+        else{ // tree is not empty
+            while(x.getRight().isRealNode()){ //go right to the max
                 x = x.getRight();
             }
-            this.max = x;
+            this.max = x; //updates max
 
         }
 
