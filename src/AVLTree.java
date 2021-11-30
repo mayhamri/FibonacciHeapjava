@@ -293,30 +293,32 @@ public class AVLTree {
     /**
      *
      * THIS FUNCTION IS REBALNCING WHEN AFTER PROMOTIONG WE GOT INTO CASE 2
+     * O(1)
      */
-    public void RebalanceCase2 ( IAVLNode father){
-        father.getParent().setHeight(father.getParent().getHeight()-1);
-        Rotate(father.getParent(),father);
+    private void RebalanceCase2 ( IAVLNode father){
+        father.getParent().setHeight(father.getParent().getHeight()-1); // demote father
+        Rotate(father.getParent(),father); // rotates
 
     }
     /**
      *
      * THIS FUNCTION IS REBALNCING WHEN AFTER PROMOTIONG WE GOT INTO CASE 3
+     * O(1)
      */
-    public void RebalanceCase33 ( IAVLNode father){
+    private void RebalanceCase33 ( IAVLNode father){
         int fatherH = father.getHeight();
         int grandfH = father.getParent().getHeight();
-        father.setHeight(fatherH-1);
-        father.getParent().setHeight(grandfH-1);
-        if (( fatherH - father.getRight().getHeight()) == 1){
-            father.getRight().setHeight(father.getRight().getHeight()+1);
-            Rotate(father,father.getRight());
-            Rotate(father.getParent().getParent(),father.getParent());
+        father.setHeight(fatherH-1); //demote father
+        father.getParent().setHeight(grandfH-1);//demote granfather
+        if (( fatherH - father.getRight().getHeight()) == 1){//right son has BF 1
+            father.getRight().setHeight(father.getRight().getHeight()+1);//promote son
+            Rotate(father,father.getRight());// first rotate
+            Rotate(father.getParent().getParent(),father.getParent());//second rotate
         }
-        else {
-            father.getLeft().setHeight(father.getLeft().getHeight()+1);
-            Rotate(father,father.getLeft());
-            Rotate(father.getParent().getParent(),father.getParent());
+        else { //left son has BF 1
+            father.getLeft().setHeight(father.getLeft().getHeight()+1);//promote son
+            Rotate(father,father.getLeft());//first rotate
+            Rotate(father.getParent().getParent(),father.getParent());//second rotate
         }
     }
 
@@ -862,6 +864,7 @@ public class AVLTree {
      *
      * precondition: keys(t) < x < keys() or keys(t) > x > keys(). t/tree might be empty (rank = -1).
      * postcondition: none
+     * O(logn)
      */
     public int join(IAVLNode x, AVLTree t)
     {
@@ -919,22 +922,22 @@ public class AVLTree {
         if (this.root.getHeight() >t.root.getHeight()){// case that this tree is higher.
             if (this.root.getKey() > x.getKey()){ // case that this tree has the larger keys.
                 this.min = t.min; // updates the min to be the new min
-                joinWithOutRebalanceBiggerFirst(this.root,x,t.root); // help function to the case that the higher tree has bigger keys. gets the higher tree first.
+                joinWithOutRebalanceBiggerFirst(this.root,x,t.root); //O(logn)  help function to the case that the higher tree has bigger keys. gets the higher tree first.
             }
             else{
                 this.max = t.max;// updates the max to be the new max
-                joinWithOutRebalanceSmallerFirst(this.root,x,t.root); // help function to the case that the higher tree has smaller  keys. gets the higher tree first.
+                joinWithOutRebalanceSmallerFirst(this.root,x,t.root); //O(logn) help function to the case that the higher tree has smaller  keys. gets the higher tree first.
             }
         }
 
         else{ // the higher tree is t
             if (t.root.getKey() > x.getKey()){
                 this.max = t.max;// updates the max to be the new max
-                joinWithOutRebalanceBiggerFirst(t.root,x,this.root);// help function to the case that the higher tree has bigger keys. gets the higher tree first.
+                joinWithOutRebalanceBiggerFirst(t.root,x,this.root);//O(logn)  help function to the case that the higher tree has bigger keys. gets the higher tree first.
             }
             else{
                 this.min = t.min; // updates the min to be the new min
-                joinWithOutRebalanceSmallerFirst(t.root,x,this.root); // help function to the case that the higher tree has smaller  keys. gets the higher tree first.
+                joinWithOutRebalanceSmallerFirst(t.root,x,this.root); // O(logn) help function to the case that the higher tree has smaller  keys. gets the higher tree first.
             }
 
         }
@@ -946,37 +949,37 @@ public class AVLTree {
         }
         this.root = newRoot;
 
-        this.RebalanceAfterJoin(x.getParent(),x); // help function the rebalance the tree.
+        this.RebalanceAfterJoin(x.getParent(),x); // O(log n)help function the rebalance the tree.
         return res;
     }
 
 
     /**
      * rebalancing the tree after  join
-     * @param
+     * O(log n)
      */
     private void RebalanceAfterJoin(IAVLNode father, IAVLNode son){
         int leftDif = father.getHeight()-father.getLeft().getHeight();// gets left BF
         int rightDif = father.getHeight() - father.getRight().getHeight(); //gets right BF
-        if ( (leftDif == 1) && (rightDif ==1 )){
+        if ( (leftDif == 1) && (rightDif ==1 )){ // BF IS (1,1),  NO PROBLEM
             return;
         }
-        else if( ((rightDif == 2) && (leftDif ==0))||((rightDif == 0 ) && (leftDif ==2))){
-            Rotate(father,son);
-            son.setHeight(son.getHeight()+1);
+        else if( ((rightDif == 2) && (leftDif ==0))||((rightDif == 0 ) && (leftDif ==2))){ //CASE 2
+            Rotate(father,son);//rotate
+            son.setHeight(son.getHeight()+1); //promote son
             father = son;
         }
         else{
-            father.setHeight(father.getHeight() +1);
+            father.setHeight(father.getHeight() +1);//promote
         }
         boolean isbalanced = false;
 
-        while (!isbalanced){
-            if(father.getParent() == null){
+        while (!isbalanced){ //O(logn) WC
+            if(father.getParent() == null){ //father is the root
                 isbalanced = true;
                 break;
             }
-            if ((father.getParent().getHeight()- father.getHeight())>0){
+            if ((father.getParent().getHeight()- father.getHeight())>0){ //balanced no problem
                 isbalanced = true;
             }
             else{
@@ -989,12 +992,12 @@ public class AVLTree {
                 else if ( type == 2){
 
                     RebalanceCase2(father);
-                    isbalanced = true;
+                    isbalanced = true; //problem solved
                 }
                 else if( type ==3){
 
                     RebalanceCase33(father);
-                    isbalanced = true;
+                    isbalanced = true; //problem solved
                 }
             }
 
