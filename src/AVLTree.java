@@ -81,22 +81,22 @@ public class AVLTree {
     /** gets a key . returns the node that has this key in case that the key exists in the tree. else, returns the node that we
      * should insert this key as their son.
      *
-     *
+     *O(logn)
      */
-    public IAVLNode getNodeBykey( int key){
+    private IAVLNode getNodeBykey( int key){
         IAVLNode p = this.root;
         IAVLNode y = null;
-        while (p != null){
-            if (  (p.getValue()!= null)){
+        while (p != null){ //search for k O(logn)
+            if (  (p.getValue()!= null)){ //make sure p not virtual
                 y = p;
-                if ( key == p.getKey()){
+                if ( key == p.getKey()){//found it
                     return p;
                 }
-                else if(key < p.getKey()){
+                else if(key < p.getKey()){ //goleft
                     p = p.getLeft();
                 }
                 else{
-                    p = p.getRight();
+                    p = p.getRight();//go right
                 }
             }
             else{break;}
@@ -819,26 +819,27 @@ public class AVLTree {
      *
      * precondition: search(x) != null (i.e. you can also assume that the tree is not empty)
      * postcondition: none
+     * O(log n )
      */
     public AVLTree[] split(int x)
     {
-        IAVLNode splitter = getNodeBykey(x);
-        AVLTree t2 = new AVLTree();
-        AVLTree t1 = new AVLTree();
-        if (splitter.getRight().isRealNode()){
+        IAVLNode splitter = getNodeBykey(x); //gets the node that x is it's key. O(log n)
+        AVLTree t2 = new AVLTree();//creates the new bigger tree
+        AVLTree t1 = new AVLTree(); //creates the new smaller tree
+        if (splitter.getRight().isRealNode()){ //makes the right son to be the root of the bigger tree.O(1)
             t2.root = splitter.getRight();
         }
-        if(splitter.getLeft().isRealNode()){
+        if(splitter.getLeft().isRealNode()){ //makes the left son to be the root of the smaller tree.O(1)
             t1.root = splitter.getLeft();
         }
         IAVLNode father = splitter.getParent();
-        while(father!= null){
-            if(father.getRight() == splitter){
+        while(father!= null){ //O(log n)
+            if(father.getRight() == splitter){ //fathers left tree  is in the smaller tree.
                 AVLTree lefttree = new AVLTree();
                 lefttree.root = father.getLeft();
                 t1.join(father,lefttree);
             }
-            else{
+            else{ // father right tree is in the bigger tree.
                 AVLTree righttree = new AVLTree();
                 righttree.root = father.getRight();
                 t2.join(father,righttree);
@@ -846,10 +847,10 @@ public class AVLTree {
             father = father.getParent();
             splitter = splitter.getParent();
         }
-        t1.updateMaxAfterDelete();
-        t1.updateMinAfterDelete();
-        t2.updateMaxAfterDelete();
-        t2.updateMaxAfterDelete();
+        t1.updateMaxAfterDelete(); //O(log n)
+        t1.updateMinAfterDelete(); // O(log n)
+        t2.updateMaxAfterDelete();//O(log n)
+        t2.updateMaxAfterDelete();//O(logn)
         AVLTree [] res = new AVLTree[2];
         res[0] = t1;
         res[1] = t2;
