@@ -247,25 +247,26 @@ public class AVLTree {
     /**
      * gets here only!! if there is a problem and one of the diffrences iz zero;
      * returns what type of rebalancing we need to do.
+     * O(1)
      */
-    public int FatherLeafType(IAVLNode father){
+    private int FatherLeafType(IAVLNode father){
         IAVLNode grandfather = father.getParent();
-        int leftdiffrence =grandfather.getHeight()- grandfather.getLeft().getHeight();
-        int rightdiffrence= grandfather.getHeight()- grandfather.getRight().getHeight();
-        if (( (rightdiffrence ==1)&(leftdiffrence == 0)) | ((rightdiffrence == 0)&(leftdiffrence == 1))){
+        int leftdiffrence =grandfather.getHeight()- grandfather.getLeft().getHeight();//gets left BF
+        int rightdiffrence= grandfather.getHeight()- grandfather.getRight().getHeight();// gets right BF
+        if (( (rightdiffrence ==1) && (leftdiffrence == 0)) || ((rightdiffrence == 0) && (leftdiffrence == 1))){ // BF IS (0,1)(1,0)
             return 1;
         }
         if(IsRightSon(grandfather,father)){
             if ((father.getHeight() - father.getRight().getHeight())==2){
-                return 3;
+                return 3; // BF (0,2)(2,1) up to symmetric
             }
         }
         else {
             if((father.getHeight() - father.getLeft().getHeight())==2){
-                return 3;
+                return 3;// BF (0,2)(2,1) up to symmetric
             }
         }
-        return 2;
+        return 2;// BF (0,2)(1,2) up to symmetric
 
     }
 
@@ -282,11 +283,11 @@ public class AVLTree {
 
     /**
      * THIS FUNCTION IS REBALNCING WHEN AFTER PROMOTIONG WE GOT INTO CASE ONE
-     *
+     *O(1)
      */
-    public void RebalanceCase1 (IAVLNode father){
+    private void RebalanceCase1 (IAVLNode father){
 
-        father.getParent().setHeight(father.getParent().getHeight()+1);
+        father.getParent().setHeight(father.getParent().getHeight()+1); // promotes father
     }
 
     /**
@@ -322,13 +323,14 @@ public class AVLTree {
     /**
      * ROTATE FATHER AND SON. updates the new size after rotation.
       son
+     O(1)
      */
-    public void Rotate(IAVLNode father,IAVLNode son){
+    private void Rotate(IAVLNode father,IAVLNode son){ //checks if the rotate should be right or left and rotate.
         if (father.getRight() == son){//left rotate
             father.setRight(son.getLeft());
             son.setLeft(father);
             IAVLNode grandf = father.getParent();
-            if (grandf!= null){
+            if (grandf!= null){ //father is not the root . updates the grandf to be son's parent.
                 if (grandf.getKey() > son.getKey()){
                     grandf.setLeft(son);
                 }
@@ -337,18 +339,18 @@ public class AVLTree {
                 }
                 son.setParent(grandf);
                 father.setParent(son);
-                father.getRight().setParent(father);//changed
+                father.getRight().setParent(father);
             }
-            else{
+            else{ // father was the root. updates son to be the new root
                 this.root = son;
                 son.setParent(null);
                 father.setParent(son);
-                father.getRight().setParent(father);//changed
+                father.getRight().setParent(father);
             }
 
 
         }
-        else{//rightrotate
+        else{//rightrotate . same as left .
             father.setLeft(son.getRight());
             son.setRight(father);
             IAVLNode grandf = father.getParent();
@@ -361,24 +363,24 @@ public class AVLTree {
                 }
                 son.setParent(grandf);
                 father.setParent(son);
-                father.getLeft().setParent(father);//changed
+                father.getLeft().setParent(father);
             }
             else{
                 this.root = son;
                 son.setParent(null);
                 father.setParent(son);
-                father.getLeft().setParent(father);//changed
+                father.getLeft().setParent(father);
             }
 
         }
-        son.UpdateSize(father.getSize());
-        father.UpdateSize(father.getLeft().getSize()+father.getRight().getSize()+1);
+        son.UpdateSize(father.getSize()); // updates son size to be the previous father size
+        father.UpdateSize(father.getLeft().getSize()+father.getRight().getSize()+1); // updates father's size to be his new size.
     }
     /**
      *static function that get a node and returns true if this node is a leaf and else false;
      */
     public static boolean isAleaf(IAVLNode node){
-        if ((node.getLeft().getValue() == null)&(node.getRight().getValue()==null)){
+        if ((node.getLeft().getValue() == null)&&(node.getRight().getValue()==null)){
             return true;
         }
         return false;
@@ -387,8 +389,9 @@ public class AVLTree {
     /**
      *
      * gets A IAVLnode and sets his right son to be a virtual leaf.
+     * O(1) complexity
      */
-    public void CreateVirtualSonRight(IAVLNode node){
+    private void CreateVirtualSonRight(IAVLNode node){
         IAVLNode son = new AVLNode(null,-1);
         son.setParent(node);
         son.setHeight(-1);
@@ -398,8 +401,9 @@ public class AVLTree {
     /**
      *
      * gets A IAVLnode and sets his left son to be a virtual leaf.
+     * O(1) complexity
      */
-    public void CreateVirtualSonLeft(IAVLNode node){
+    private void CreateVirtualSonLeft(IAVLNode node){
         IAVLNode son = new AVLNode(null,-1);
         son.setHeight(-1);
         son.setParent(node);
@@ -428,7 +432,7 @@ public class AVLTree {
         IAVLNode succsesor = Successor(delete);
         IAVLNode backupdelete = delete;
         IAVLNode father = delete.getParent();
-        if ((delete.getLeft().isRealNode())&(delete.getRight().isRealNode())){
+        if ((delete.getLeft().isRealNode())&&(delete.getRight().isRealNode())){
             delete = succsesor;
             father = delete.getParent();
             changed = true;
@@ -614,35 +618,35 @@ public class AVLTree {
     public int CheckCaseAfterDelete(IAVLNode father){
         int leftdif = father.getHeight()-father.getLeft().getHeight();
         int rightdif = father.getHeight()-father.getRight().getHeight();
-        if ( (rightdif ==2)&(leftdif ==2)){
+        if ( (rightdif ==2)&&(leftdif ==2)){
             return 1;
         }
-        if((leftdif ==3)&(rightdif==1)){
+        if((leftdif ==3)&&(rightdif==1)){
             IAVLNode son = father.getRight();
             int leftsondif = son.getHeight()-son.getLeft().getHeight();
             int rightsondif = son.getHeight() - son.getRight().getHeight();
-            if ( (leftsondif == 1) &(rightsondif == 1)){
+            if ( (leftsondif == 1) &&(rightsondif == 1)){
                 return 2;
             }
-            else if((rightsondif ==1)&(leftsondif==2)){
+            else if((rightsondif ==1)&&(leftsondif==2)){
                 return 3;
             }
-            else if((leftsondif ==1)&(rightsondif ==2)){
+            else if((leftsondif ==1)&&(rightsondif ==2)){
                 return 4;
             }
 
         }
-        if ((rightdif ==3 )&(leftdif ==1)){
+        if ((rightdif ==3 )&&(leftdif ==1)){
             IAVLNode son = father.getLeft();
             int leftsondif = son.getHeight()-son.getLeft().getHeight();
             int rightsondif = son.getHeight() - son.getRight().getHeight();
-            if((leftsondif ==1) & (rightsondif == 1)){
+            if((leftsondif ==1) && (rightsondif == 1)){
                 return 2;
             }
-            if((leftsondif == 1) & (rightsondif == 2)){
+            if((leftsondif == 1) && (rightsondif == 2)){
                 return 3;
             }
-             if((rightsondif == 1) & (leftsondif == 2)){
+             if((rightsondif == 1) && (leftsondif == 2)){
                 return 4;
             }
         }
@@ -862,19 +866,19 @@ public class AVLTree {
     public int join(IAVLNode x, AVLTree t)
     {
 
-        if ((this.root == null)&(t.root == null)){  // checks if the trees are empty
+        if ((this.root == null)&&(t.root == null)){  // checks if the trees are empty
             this.root =x; // creates new tree that x is its root and it's only node.
             this.min = x;
             this.max = x;
             x.UpdateSize(1);
-            CreateVirtualSonLeft(x);
-            CreateVirtualSonRight(x);
+            CreateVirtualSonLeft(x);//O(1)
+            CreateVirtualSonRight(x);//O(1)
             return 1;
         }
         if (t.root == null){ // checks if the other tree is empty
             int k = x.getKey();
             String i = x.getValue();
-            this.insert(k,i); // insert x to my tree.
+            this.insert(k,i); // insert x to my tree. O(log n )
             return this.root.getHeight()+1;
         }
 
@@ -951,13 +955,13 @@ public class AVLTree {
      * rebalancing the tree after  join
      * @param
      */
-    public void RebalanceAfterJoin(IAVLNode father, IAVLNode son){
-        int leftDif = father.getHeight()-father.getLeft().getHeight();
-        int rightDif = father.getHeight() - father.getRight().getHeight();
-        if ( (leftDif == 1)&(rightDif ==1 )){
+    private void RebalanceAfterJoin(IAVLNode father, IAVLNode son){
+        int leftDif = father.getHeight()-father.getLeft().getHeight();// gets left BF
+        int rightDif = father.getHeight() - father.getRight().getHeight(); //gets right BF
+        if ( (leftDif == 1) && (rightDif ==1 )){
             return;
         }
-        else if( ((rightDif == 2)&(leftDif ==0))|((rightDif == 0 )&(leftDif ==2))){
+        else if( ((rightDif == 2) && (leftDif ==0))||((rightDif == 0 ) && (leftDif ==2))){
             Rotate(father,son);
             son.setHeight(son.getHeight()+1);
             father = son;
@@ -1003,12 +1007,13 @@ public class AVLTree {
 
     /**
      * updates the sizes up to the root after joining 2 trees into 1 .
+     * O(log n)
      * @param x
      */
-    public static void  updateSizeAfterJoin(IAVLNode x){
+    private static void  updateSizeAfterJoin(IAVLNode x){
         IAVLNode c = x.getParent();
         x.UpdateSize(x.getLeft().getSize() + x.getRight().getSize()+1);
-        while(c!= null){
+        while(c!= null){ // updates the size from x up to the root.
             c.UpdateSize(c.getRight().getSize() + c.getLeft().getSize()+1);
             c = c.getParent();
         }
@@ -1017,15 +1022,13 @@ public class AVLTree {
 
     /**
      * does the join part before the rebalncing in case that the higher tree has the bigger keys.
-     * @param t2
-     * @param x
-     * @param t1
+     * O(log n)
      */
-    public static void joinWithOutRebalanceBiggerFirst(IAVLNode t2,IAVLNode x, IAVLNode t1){
+    private static void joinWithOutRebalanceBiggerFirst(IAVLNode t2,IAVLNode x, IAVLNode t1){// t2 is always higher than t1
         int h = t1.getHeight();
         IAVLNode a = t1;
         IAVLNode b = t2;
-        while ( b.getHeight() > h ){
+        while ( b.getHeight() > h ){ //O(log n) , finds the first node that his height is <= than the other's tree height.
             b= b.getLeft();
         }
         x.setRight(b);
@@ -1036,22 +1039,20 @@ public class AVLTree {
         x.setParent(c);
         c.setLeft(x);
         x.setHeight(h+1);
-        updateSizeAfterJoin(x);
+        updateSizeAfterJoin(x);//O(log n). updates the size after the trees are joined.
 
     }
 
 
     /**
      * does the join part before the rebalncing in case that the higher tree has the smaller keys.
-     * @param t1
-     * @param x
-     * @param t2
+     * O(log n)
      */
-    public static void joinWithOutRebalanceSmallerFirst(IAVLNode t1,IAVLNode x, IAVLNode t2){
+    private static void joinWithOutRebalanceSmallerFirst(IAVLNode t1,IAVLNode x, IAVLNode t2){// t1 is always higher than t2
         int h = t2.getHeight();
         IAVLNode a = t2;
         IAVLNode b = t1;
-        while ( b.getHeight() > h){
+        while ( b.getHeight() > h){ //O(log n) , finds the first node that his height is <= than the other's tree height.
             b= b.getRight();
         }
         x.setLeft(b);
@@ -1062,7 +1063,7 @@ public class AVLTree {
         x.setParent(c);
         c.setRight(x);
         x.setHeight(h+1);
-        updateSizeAfterJoin(x);
+        updateSizeAfterJoin(x);//O(log n). updates the size after the trees are joined.
     }
 
 
@@ -1110,6 +1111,7 @@ public class AVLTree {
         /**
          *
          *constructor to a new node with info and key.
+         * O(1)
          */
         public AVLNode(String info, int key){
             this.info = info;
@@ -1124,6 +1126,7 @@ public class AVLTree {
         /**
          *
          * @return the key of this node.
+         * O(1)
          */
         public int getKey()
         {
@@ -1135,6 +1138,7 @@ public class AVLTree {
         /**
          *
          * @return the value of this node.
+         * O(1)
          */
         public String getValue()
         {
@@ -1144,6 +1148,7 @@ public class AVLTree {
 
         /**
          * sets the left son to be this IAVLNODE
+         * O(1)
          */
         public void setLeft(IAVLNode node)
         {
@@ -1154,32 +1159,38 @@ public class AVLTree {
         /**
          *
          * RETURNS the leftson. if doesnt exists - return null
+         * O(1)
          */
         public IAVLNode getLeft()
         {
-            return this.left; // to be replaced by student code
+
+            return this.left;
         }
 
         /**
          * sets the right son to be this IAVLNODE
+         * O(1)
          */
         public void setRight(IAVLNode node)
         {
+
             this.right = node;
         }
 
         /**
          *
          * RETURNS the righttson. if doesnt exists - return null
+         * O(1)
          */
         public IAVLNode getRight()
         {
 
-            return this.right; // to be replaced by student code
+            return this.right;
         }
 
         /**
          * sets the parent to be this IAVLNODE
+         * O(1)
          */
         public void setParent(IAVLNode node)
         {
@@ -1189,6 +1200,7 @@ public class AVLTree {
         /**
          *
          * RETURNS the parent. if doesnt exists - return null
+         * O(1)
          */
         public IAVLNode getParent()
         {
@@ -1198,44 +1210,43 @@ public class AVLTree {
         /**
          *
          * returns false if the node is a virtualson. else, returns true
+         * O(1)
          */
         public boolean isRealNode()
         {
-
-            if ( this.key == -1){
-                return false; // to be replaced by student code
-            }
-            return true;
+            return this.key != -1;
         }
 
         /**
          *change this rank to be height.
+         * O(1)
          */
         public void setHeight(int height)
         {
             this.rank = height;
-            // to be replaced by student code
         }
 
         /**
          *
          * returns the height of this node(the height of this node is its rank)
+         * O(1)
          *
          */
         public int getHeight()
         {
-            return this.rank; // to be replaced by student code
+            return this.rank;
         }
 
         /**
          * returns the size of the tree that this node is it root.
-         * @return
+         * O(1)
          */
         public int getSize(){
             return this.size;
         }
         /**
          * updates the size of a node in 1;
+         * O(1)
          */
         public void UpdateSize(){
             this.size+=1;
@@ -1243,12 +1254,14 @@ public class AVLTree {
         }
         /**
          * update size to be k
+         * O(1)
          */
         public void UpdateSize(int k){
             this.size = k;
         }
         /**
          * decrease size by 1
+         * O(1)
          */
         public  void  DecreaseSize(){
             this.size -=1;
