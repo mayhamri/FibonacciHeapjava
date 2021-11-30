@@ -26,11 +26,11 @@ public class AVLTree {
      * public boolean empty()
      *
      * Returns true if and only if the tree is empty.
-     *
+     *O(1)
      */
 
     public boolean empty() {
-        return this.root == null ; // to be replaced by student code
+        return this.root == null ;
     }
 
     /** needs to be deleted
