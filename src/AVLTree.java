@@ -386,10 +386,13 @@ public class AVLTree {
      * O(1)
      */
     private static boolean isAleaf(IAVLNode node){
+        if(node == null){ //change
+            return false;
+        }
         if((node.getRight()==null)||(node.getLeft()==null)){
             return false;
         }
-        return (node.getRight().isRealNode())&&(node.getLeft().isRealNode());
+        return (!node.getRight().isRealNode())&&(!node.getLeft().isRealNode()); //change
     }
 
     /**
@@ -544,7 +547,7 @@ public class AVLTree {
                 if( type == 3){ //rebalance after type 3
                     Rotate(father,son);
                     father.setHeight(father.getHeight()-2); // 2 demote
-                    numofop +=3;
+                    numofop +=2;
                     father = father.getParent().getParent();//continue the check
                     if ( father == null){ // break if we got to the root
                         break;
@@ -566,7 +569,7 @@ public class AVLTree {
                     son.setHeight(son.getHeight()-1);//1 demote
                     grandson.setHeight(grandson.getHeight()+1);//promote
                     father = grandson.getParent();//continue the check
-                    numofop += 6;
+                    numofop += 5;
                     if (father == null){ // break if we got to the root
                         break;
                     }
