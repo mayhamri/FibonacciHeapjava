@@ -896,12 +896,16 @@ public class AVLTree {
             if(father.getRight() == splitter){ //fathers left tree  is in the smaller tree.
                 AVLTree lefttree = new AVLTree();
                 lefttree.root = father.getLeft();
-                t1.join(father,lefttree);
+                lefttree.root.setParent(null);//changed
+                IAVLNode copyfather = new AVLNode(father.getValue(), father.getKey()); // changed
+                t1.join(copyfather,lefttree);
             }
             else{ // father right tree is in the bigger tree.
                 AVLTree righttree = new AVLTree();
                 righttree.root = father.getRight();
-                t2.join(father,righttree);
+                righttree.root.setParent(null);//changed
+                IAVLNode copyfather = new AVLNode(father.getValue(), father.getKey()); // changed
+                t2.join(copyfather,righttree);
             }
             father = father.getParent();
             splitter = splitter.getParent();
@@ -909,7 +913,7 @@ public class AVLTree {
         t1.updateMaxAfterDelete(); //O(log n)
         t1.updateMinAfterDelete(); // O(log n)
         t2.updateMaxAfterDelete();//O(log n)
-        t2.updateMaxAfterDelete();//O(logn)
+        t2.updateMinAfterDelete();//O(logn)
         AVLTree [] res = new AVLTree[2];
         res[0] = t1;
         res[1] = t2;
