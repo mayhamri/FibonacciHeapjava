@@ -23,6 +23,29 @@ public class AVLTree {
     }
 
     /**
+     * needs to be deleted!!!! our test
+     * @param root
+     */
+    public void testRanks(IAVLNode root){
+        IAVLNode p = root;
+        if(root == null){
+            return;
+        }
+        if (!root.isRealNode()){
+            return;
+        }
+        int left = p.getHeight() - p.getLeft().getHeight();
+        int right = p.getHeight() - p.getRight().getHeight();
+        if (((left == 2)&&(right ==1))||((left == 1)&&(right ==2))||((left ==1)&&(right ==1))){
+            testRanks(p.getRight());
+            testRanks(p.getLeft());
+        }
+        else{
+            System.out.println("wrong BF!! in : "+p.getKey() + "bf is"+left +"and"+right);
+        }
+    }
+
+    /**
      * public boolean empty()
      *
      * Returns true if and only if the tree is empty.
@@ -478,15 +501,30 @@ public class AVLTree {
                     this.max = root;
                 }
             }
-            else{ //deletes the unary node.
-                if (delete.getRight().isRealNode()){
-                    father.setRight(delete.getRight());
-                    delete.getRight().setParent(father);
+            else{
+                //deletes the unary node.
+                if(IsRightSon(father,delete)){ //change  - delete is a right son
+                    if (delete.getRight().isRealNode()){ //right son , right son
+                        father.setRight(delete.getRight());
+                        delete.getRight().setParent(father);
+                    }
+                    else{ //right son . left son
+                        father.setRight(delete.getLeft());
+                        delete.getLeft().setParent(father);
+                    }
+                } /// change
+                else{ // left son , right son
+                    if (delete.getRight().isRealNode()){
+                        father.setLeft(delete.getRight());
+                        delete.getRight().setParent(father);
+                    }
+                    else{ // left son , left son
+                        father.setLeft(delete.getLeft());
+                        delete.getLeft().setParent(father);
+                    }
+
                 }
-                else{
-                    father.setLeft(delete.getLeft());
-                    delete.getLeft().setParent(father);
-                }
+
             }
 
         }
