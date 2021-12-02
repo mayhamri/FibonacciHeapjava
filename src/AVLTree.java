@@ -935,6 +935,7 @@ public class AVLTree {
             this.root =x; // creates new tree that x is its root and it's only node.
             this.min = x;
             this.max = x;
+            x.setHeight(1);//changed
             x.UpdateSize(1);
             CreateVirtualSonLeft(x);//O(1)
             CreateVirtualSonRight(x);//O(1)
@@ -959,6 +960,7 @@ public class AVLTree {
         }
         int res = Math.abs(this.root.getHeight()-t.root.getHeight())+1; // calculates the return value .
         if (this.root.getHeight() == t.root.getHeight()){ // checks if the trees has the same height.
+            x.setHeight(this.root.getHeight() +1);//changed - update new height for x
             if(this.root.getKey() >x.getKey()){ // checks which tree has the larger keys
                 x.setRight(this.root);
                 x.setLeft(t.root);
@@ -1093,6 +1095,7 @@ public class AVLTree {
         int h = t1.getHeight();
         IAVLNode a = t1;
         IAVLNode b = t2;
+        x.setHeight(h+1);//changed!!! updates new height for x
         while ( b.getHeight() > h ){ //O(log n) , finds the first node that his height is <= than the other's tree height.
             b= b.getLeft();
         }
@@ -1117,6 +1120,7 @@ public class AVLTree {
         int h = t2.getHeight();
         IAVLNode a = t2;
         IAVLNode b = t1;
+        x.setHeight(h+1);//changed!!! updates new height for x
         while ( b.getHeight() > h){ //O(log n) , finds the first node that his height is <= than the other's tree height.
             b= b.getRight();
         }
