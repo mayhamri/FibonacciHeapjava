@@ -533,6 +533,7 @@ public class AVLTree {
             succsesor.setLeft(backupdelete.getLeft());
             succsesor.getRight().setParent(succsesor);
             succsesor.getLeft().setParent(succsesor);
+            succsesor.setHeight(backupdelete.getHeight()); //changed
             if(backupdelete.getParent()!=null){
                 if(IsRightSon(backupdelete.getParent(),backupdelete)){
                     backupdelete.getParent().setRight(succsesor);
@@ -549,6 +550,9 @@ public class AVLTree {
                 this.root.setHeight(backupdelete.getHeight());
                 this.root.UpdateSize(backupdelete.getSize());
             }
+            if(father == backupdelete){//change
+                father = succsesor;//change
+            }//change
 
         }
         if ( father == null){//finished.
