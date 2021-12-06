@@ -22,50 +22,6 @@ public class AVLTree {
 
     }
 
-    /**
-     * needs to be deleted!!!! our test
-     * @param root
-     */
-    public void testRanks(IAVLNode root){
-        IAVLNode p = root;
-        if(root == null){
-            return;
-        }
-        if (!root.isRealNode()){
-            return;
-        }
-        int left = p.getHeight() - p.getLeft().getHeight();
-        int right = p.getHeight() - p.getRight().getHeight();
-        if (((left == 2)&&(right ==1))||((left == 1)&&(right ==2))||((left ==1)&&(right ==1))){
-            testRanks(p.getRight());
-            testRanks(p.getLeft());
-        }
-        else{
-            System.out.println("wrong BF!! in : "+p.getKey() + "bf is"+left +"and"+right);
-        }
-    }
-    /**
-     * needs to be deleted!!!! our test
-     * @param root
-     */
-    public void testSize(IAVLNode root){
-        IAVLNode p = root;
-        if(root == null){
-            return;
-        }
-        if (!root.isRealNode()){
-            return;
-        }
-        int left = p.getLeft().getSize();
-        int right = p.getRight().getSize();
-        if (p.getSize() == (left+right+1)){
-            testSize(p.getRight());
-            testSize(p.getLeft());
-        }
-        else{
-            System.out.println("wrong size "+p.getKey());
-        }
-    }
 
 
     /**
@@ -79,24 +35,7 @@ public class AVLTree {
         return this.root == null ;
     }
 
-    /** needs to be deleted
-     *
-     * @param root
-     * @param level
-     */
-    public static void printBinaryTree(IAVLNode root, int level){
-        if(root==null)
-            return;
-        printBinaryTree(root.getRight(), level+1);
-        if(level!=0){
-            for(int i=0;i<level-1;i++)
-                System.out.print("|\t");
-            System.out.println("|-------"+"**"+root.getKey()+"** "+root.getSize()+' '+root.getHeight());
-        }
-        else
-            System.out.println(root.getKey());
-        printBinaryTree(root.getLeft(), level+1);
-    }
+
 
     /**
      * updates the minimum after insertion
@@ -113,7 +52,7 @@ public class AVLTree {
     }
 
     /**
-     * updates the maxium after insertion
+     * updates the maximum after insertion
      * O(1)
      */
     private void UpdateMaxInsert(IAVLNode newNode){
@@ -432,13 +371,13 @@ public class AVLTree {
      * O(1)
      */
     private static boolean isAleaf(IAVLNode node){
-        if(node == null){ //change
+        if(node == null){
             return false;
         }
         if((node.getRight()==null)||(node.getLeft()==null)){
             return false;
         }
-        return (!node.getRight().isRealNode())&&(!node.getLeft().isRealNode()); //change
+        return (!node.getRight().isRealNode())&&(!node.getLeft().isRealNode());
     }
 
     /**
@@ -526,7 +465,7 @@ public class AVLTree {
             }
             else{
                 //deletes the unary node.
-                if(IsRightSon(father,delete)){ //change  - delete is a right son
+                if(IsRightSon(father,delete)){ // delete is a right son
                     if (delete.getRight().isRealNode()){ //right son , right son
                         father.setRight(delete.getRight());
                         delete.getRight().setParent(father);
@@ -535,7 +474,7 @@ public class AVLTree {
                         father.setRight(delete.getLeft());
                         delete.getLeft().setParent(father);
                     }
-                } /// change
+                }
                 else{ // left son , right son
                     if (delete.getRight().isRealNode()){
                         father.setLeft(delete.getRight());
@@ -556,8 +495,8 @@ public class AVLTree {
             succsesor.setLeft(backupdelete.getLeft());
             succsesor.getRight().setParent(succsesor);
             succsesor.getLeft().setParent(succsesor);
-            succsesor.setHeight(backupdelete.getHeight()); //changed
-            succsesor.UpdateSize(backupdelete.getSize());//changed
+            succsesor.setHeight(backupdelete.getHeight());
+            succsesor.UpdateSize(backupdelete.getSize());
             if(backupdelete.getParent()!=null){
                 if(IsRightSon(backupdelete.getParent(),backupdelete)){
                     backupdelete.getParent().setRight(succsesor);
@@ -574,9 +513,9 @@ public class AVLTree {
                 this.root.setHeight(backupdelete.getHeight());
                 this.root.UpdateSize(backupdelete.getSize());
             }
-            if(father == backupdelete){//change
-                father = succsesor;//change
-            }//change
+            if(father == backupdelete){
+                father = succsesor;
+            }
 
         }
         if ( father == null){//finished.
@@ -610,7 +549,7 @@ public class AVLTree {
                     numofop +=3;
                     break; //in this case, the tree is balanced.
                 }
-                else if( type == 3){ //rebalance after type 3 //change
+                else if( type == 3){ //rebalance after type 3
                     Rotate(father,son);
                     father.setHeight(father.getHeight()-2); // 2 demote
                     numofop +=2;
@@ -620,7 +559,7 @@ public class AVLTree {
                     }
                     type = CheckCaseAfterDelete(father);//checks the new type
                 }
-                else if ( type ==4){//rebalance after type 4 //change
+                else if ( type ==4){//rebalance after type 4
                     IAVLNode grandson; //checks which grandSon has the 1 BF .
                     if ( son.getHeight()-son.getRight().getHeight() == 1){
                         grandson = son.getRight();
@@ -785,7 +724,7 @@ public class AVLTree {
      */
     public String min()
     {
-        return this.min.getValue(); // to be replaced by student code
+        return this.min.getValue();
     }
 
     /**
@@ -924,15 +863,15 @@ public class AVLTree {
             if(father.getRight() == splitter){ //fathers left tree  is in the smaller tree.
                 AVLTree lefttree = new AVLTree();
                 lefttree.root = father.getLeft();
-                lefttree.root.setParent(null);//changed
-                IAVLNode copyfather = new AVLNode(father.getValue(), father.getKey()); // changed
+                lefttree.root.setParent(null);
+                IAVLNode copyfather = new AVLNode(father.getValue(), father.getKey());
                 t1.join(copyfather,lefttree);
             }
             else{ // father right tree is in the bigger tree.
                 AVLTree righttree = new AVLTree();
                 righttree.root = father.getRight();
-                righttree.root.setParent(null);//changed
-                IAVLNode copyfather = new AVLNode(father.getValue(), father.getKey()); // changed
+                righttree.root.setParent(null);
+                IAVLNode copyfather = new AVLNode(father.getValue(), father.getKey());
                 t2.join(copyfather,righttree);
             }
             father = father.getParent();
@@ -967,7 +906,7 @@ public class AVLTree {
             this.root =x; // creates new tree that x is its root and it's only node.
             this.min = x;
             this.max = x;
-            x.setHeight(1);//changed
+            x.setHeight(1);
             x.UpdateSize(1);
             CreateVirtualSonLeft(x);//O(1)
             CreateVirtualSonRight(x);//O(1)
@@ -992,7 +931,7 @@ public class AVLTree {
         }
         int res = Math.abs(this.root.getHeight()-t.root.getHeight())+1; // calculates the return value .
         if (this.root.getHeight() == t.root.getHeight()){ // checks if the trees has the same height.
-            x.setHeight(this.root.getHeight() +1);//changed - update new height for x
+            x.setHeight(this.root.getHeight() +1);// update new height for x
             if(this.root.getKey() >x.getKey()){ // checks which tree has the larger keys
                 x.setRight(this.root);
                 x.setLeft(t.root);
@@ -1127,7 +1066,7 @@ public class AVLTree {
         int h = t1.getHeight();
         IAVLNode a = t1;
         IAVLNode b = t2;
-        x.setHeight(h+1);//changed!!! updates new height for x
+        x.setHeight(h+1);//updates new height for x
         while ( b.getHeight() > h ){ //O(log n) , finds the first node that his height is <= than the other's tree height.
             b= b.getLeft();
         }
@@ -1152,7 +1091,7 @@ public class AVLTree {
         int h = t2.getHeight();
         IAVLNode a = t2;
         IAVLNode b = t1;
-        x.setHeight(h+1);//changed!!! updates new height for x
+        x.setHeight(h+1);//updates new height for x
         while ( b.getHeight() > h){ //O(log n) , finds the first node that his height is <= than the other's tree height.
             b= b.getRight();
         }
@@ -1232,7 +1171,7 @@ public class AVLTree {
         public int getKey()
         {
 
-            return this.key; // to be replaced by student code
+            return this.key;
         }
 
 
@@ -1244,7 +1183,7 @@ public class AVLTree {
         public String getValue()
         {
 
-            return this.info; // to be replaced by student code
+            return this.info;
         }
 
         /**
@@ -1296,7 +1235,7 @@ public class AVLTree {
         public void setParent(IAVLNode node)
         {
 
-            this.parent = node; // to be replaced by student code
+            this.parent = node;
         }
         /**
          *
@@ -1305,7 +1244,7 @@ public class AVLTree {
          */
         public IAVLNode getParent()
         {
-            return this.parent; // to be replaced by student code
+            return this.parent;
         }
 
         /**
