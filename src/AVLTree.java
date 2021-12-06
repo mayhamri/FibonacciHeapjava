@@ -44,6 +44,29 @@ public class AVLTree {
             System.out.println("wrong BF!! in : "+p.getKey() + "bf is"+left +"and"+right);
         }
     }
+    /**
+     * needs to be deleted!!!! our test
+     * @param root
+     */
+    public void testSize(IAVLNode root){
+        IAVLNode p = root;
+        if(root == null){
+            return;
+        }
+        if (!root.isRealNode()){
+            return;
+        }
+        int left = p.getLeft().getSize();
+        int right = p.getRight().getSize();
+        if (p.getSize() == (left+right+1)){
+            testSize(p.getRight());
+            testSize(p.getLeft());
+        }
+        else{
+            System.out.println("wrong size "+p.getKey());
+        }
+    }
+
 
     /**
      * public boolean empty()
@@ -534,6 +557,7 @@ public class AVLTree {
             succsesor.getRight().setParent(succsesor);
             succsesor.getLeft().setParent(succsesor);
             succsesor.setHeight(backupdelete.getHeight()); //changed
+            succsesor.UpdateSize(backupdelete.getSize());//changed
             if(backupdelete.getParent()!=null){
                 if(IsRightSon(backupdelete.getParent(),backupdelete)){
                     backupdelete.getParent().setRight(succsesor);
@@ -586,7 +610,7 @@ public class AVLTree {
                     numofop +=3;
                     break; //in this case, the tree is balanced.
                 }
-                if( type == 3){ //rebalance after type 3
+                else if( type == 3){ //rebalance after type 3 //change
                     Rotate(father,son);
                     father.setHeight(father.getHeight()-2); // 2 demote
                     numofop +=2;
@@ -596,7 +620,7 @@ public class AVLTree {
                     }
                     type = CheckCaseAfterDelete(father);//checks the new type
                 }
-                if ( type ==4){//rebalance after type 4
+                else if ( type ==4){//rebalance after type 4 //change
                     IAVLNode grandson; //checks which grandSon has the 1 BF .
                     if ( son.getHeight()-son.getRight().getHeight() == 1){
                         grandson = son.getRight();
