@@ -117,7 +117,36 @@ public class FibonacciHeap
      * does successive linking to the heap
      */
     private void successiveLinking(){
-        int k = floor(1.4404 * log(this.n))+1;
+        if (this.isEmpty()){
+            return;
+        }
+        int k = floor(1.4404 * log(this.n))+1;//the maxismum rank of a tree
+        HeapNode [] trees = new HeapNode[k];
+        HeapNode p = first;
+        trees[first.getRank()]=first;
+        p = p.getNext();
+        while(p.getKey() != first.getKey()){ //entres trees to array
+            int k = p.getRank();//finds which cell is needed
+            if (trees[k] == null){//empty cell - no other tree of rank k
+                tree[k] = p; //enters p to the array
+            }
+            else{ //there is another tree in the needed cell
+                HeapNode newroot = link(p,trees[k]); // links the trees to a tree of rank k+1;
+                trees[k] = null; //updates the cell to be empty
+                k +=1;
+                while(trees[k] != null){//checks if the next cell is empty (k+1) , if not . countinue to link and check. until the needed cell is empty
+                    newroot = link(newroot,trees[k]);
+                    trees[k] = null;
+                    k+=1;
+                }
+                trees[k] = newroot; //insert the tree to the needed cell
+                p = p.getNext();
+
+            }
+
+
+        }
+
 
     }
     /**
