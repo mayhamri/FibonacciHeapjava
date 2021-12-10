@@ -144,6 +144,23 @@ public class FibonacciHeap
 
             }
 
+            int index = 0;
+            while(trees[index] == null){//finds the first tree
+                index +=1;
+            }
+            first = trees[index];
+            HeapNode lastseen = trees[index];
+            for (int i = index+1 ; i <trees.length ; i++){//sets prev and next to the roots in the heap
+                if(trees[i] != null){
+                    trees[i].setPrev(lastseen);
+                    lastseen.setNext(trees[i]);
+                    lastseen = trees[i];
+                }
+            }
+
+            lastseen.setNext(first);
+            first.setPrev(lastseen);
+
 
         }
 
