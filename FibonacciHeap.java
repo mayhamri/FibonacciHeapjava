@@ -60,9 +60,43 @@ public class FibonacciHeap
     */
     public void deleteMin()
     {
+        HeapNode child = this.min.getChild();
+        HeapNode lastChild = child.getPrev();
+        if(min.getChild() == null){//min has no child
+            if(first.getKey() == min.getKey()){//min is first in the heap
+                if ( n>1){//heap has more than 1 tree
+                    first = min.getNext();
+                    min.getNext().setPrev(min.getPrev());
+                    min.getPrev().setNext(min.getNext());
+                }
+                else{ //heap has only 1 tree- the min.
+                    min = null;
+                    first = null;
+                }
+            }
+            else{//first is not the min
+                min.getNext().setPrev(min.getPrev());
+                min.getPrev().setNext(min.getNext());
+            }
+        }
+        else{// the min has children
+            if(first.getKey() == min.getKey()){//the first is the min
+                first = min.getChild();
+            }
+            child.setPrev(min.getPrev());
+            min.getPrev().setNext(child);
+            lastChild.next = min.getNext();
+            min.getNext().setPrev(lastChild);
+            while(child.getKey()!= lastChild.getKey()){//goes over all children and updates parent to null
+                child.setParent(null);
+                child = child.getNext();
+            }
+            lastChild.setParent(null);
 
-     	this.n -=1;
-     	
+        }
+        this.n -=1; //updates size
+        this.successiveLinking();
+        this.updateMin();//updates new min
     }
 
     private void updateMin(){
