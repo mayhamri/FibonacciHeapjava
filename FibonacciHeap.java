@@ -216,20 +216,20 @@ public class FibonacciHeap
     */
     public void meld (FibonacciHeap heap2)
     {
-        if(heap2.isEmpty()){
-            return;
+        if(heap2.isEmpty()){ //THE SECOND HEAP IS EMPTY
+            return; //do nothing
         }
-        else if(this.isEmpty()){
+        else if(this.isEmpty()){ // this heap is empty , makes it the other heap
             this.min = heap2.min;
             this.n = heap2.n;
             this.first = heap2.first;
         }
 
-        else{
-            if(heap2.min < this.min){
+        else{ //both of the heaps are not empty!
+            if(heap2.min < this.min){//updates min
                 this.min = heap2.min
             }
-            this.n += heap2.n;
+            this.n += heap2.n; //updates n
             HeapNode lastMe = this.first.getPrev();
             HeapNode lastHeap2 = heap2.first.getPrev();
             this.first.setPrev(lastHeap2);
