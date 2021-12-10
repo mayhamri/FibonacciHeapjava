@@ -65,6 +65,33 @@ public class FibonacciHeap
      	
     }
 
+    private void updateMin(){
+        HeapNode p = this.first;
+        HeapNode curmin = this.first;
+        int curminkey = this.first.key;
+        while ( (p!= null) &&(p.getKey() != first.getKey())){
+            if(curminkey > p.getKey()){
+                curmin = p;
+                curminkey = p.getKey()
+            }
+            p = p.getNext();
+        }
+        this.min = curmin;
+    }
+
+    /**
+     * does successive linking to the heap
+     */
+    private void successiveLinking(){
+        int k = floor(1.4404 * log(this.n))+1;
+
+    }
+    /**
+     * links to trees of the same rank
+     * @param a
+     * @param b
+     * @return
+     */
     private HeapNode link(HeapNode a , HeapNode b){
         numOfLinks +=1;
         if(a.getKey()> b.getKey()){
