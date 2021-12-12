@@ -109,7 +109,7 @@ public class FibonacciHeap {
     }
 
     private void updateMin(){
-        HeapNode p = this.first;
+        HeapNode p = this.first.getNext();//change
         HeapNode curmin = this.first;
         int curminkey = this.first.key;
         while ( (p!= null) &&(p.getKey() != first.getKey())){
@@ -140,6 +140,7 @@ public class FibonacciHeap {
                 trees[k] = p;
                 p = p.getNext();//enters p to the array
             } else { //there is another tree in the needed cell
+                HeapNode next = p.getNext();//change
                 HeapNode newroot = link(p, trees[k]); // links the trees to a tree of rank k+1;
                 trees[k] = null; //updates the cell to be empty
                 k += 1;
@@ -149,7 +150,7 @@ public class FibonacciHeap {
                     k += 1;
                 }
                 trees[k] = newroot; //insert the tree to the needed cell
-                p = p.getNext();
+                p = next;//change
 
             }
         }
@@ -238,6 +239,8 @@ public class FibonacciHeap {
             this.min = heap2.min;
             this.n = heap2.n;
             this.first = heap2.first;
+            this.numMarked = heap2.numMarked;
+            this.numOfTrees = heap2.numOfTrees;
         }
 
         else{ //both of the heaps are not empty!
@@ -252,6 +255,7 @@ public class FibonacciHeap {
             lastHeap2.setNext(this.first);
             lastMe.setNext(heap2.first);
             heap2.first.setPrev(lastMe);
+
         }
 
 
@@ -312,7 +316,7 @@ public class FibonacciHeap {
      */
     public void delete(HeapNode x)
     {
-        int delta = x.getKey() - this.min.getKey() -1;
+        int delta = x.getKey() - this.min.getKey() +1;
         decreaseKey(x,delta);//makes x the min
         deleteMin();//deletes x
     }
