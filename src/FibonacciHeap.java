@@ -348,7 +348,6 @@ public class FibonacciHeap {
      * @param y
      */
     private void cut(HeapNode x ,HeapNode y){
-        y.setRank(y.getRank()-1);//change
         numOfCuts +=1;
         numOfTrees +=1;
         x.setParent(null);//x is a new root
@@ -370,6 +369,7 @@ public class FibonacciHeap {
 
         x.setNext(first);//entrs x to the heap as a the first tree
         x.setPrev(first.getPrev());
+        first.getPrev().setNext(x);//change
         first.setPrev(x);
         first =x;
     }
@@ -381,7 +381,7 @@ public class FibonacciHeap {
      */
     private void cascadingCut(HeapNode x,HeapNode y){
         cut(x,y); //does the cuts
-        if(y.getParent()!= null){ //y hasnt lost another son yet
+        if(y.getParent()!= null){ //y is not a root
             if(!y.marked){//cheks if y has already lost a son
                 y.setMarked(true);
                 numMarked +=1;
