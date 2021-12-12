@@ -252,7 +252,6 @@ public class FibonacciHeap {
             lastHeap2.setNext(this.first);
             lastMe.setNext(heap2.first);
             heap2.first.setPrev(lastMe);
-
         }
 
 
@@ -297,8 +296,8 @@ public class FibonacciHeap {
             }
         }
 
-        int [] res2 = new int[k];//copies the answer to a new array
-        for( int i = 0 ; i< k ; i ++){
+        int [] res2 = new int[k+1];//copies the answer to a new array
+        for( int i = 0 ; i< res2.length ; i ++){
             res2[i]=res[i];
         }
         return res2;
@@ -332,6 +331,9 @@ public class FibonacciHeap {
                 cascadingCut(x,x.getParent());//fixes it with cascadingcut
             }
         }
+        if(this.min.getKey() > x.getKey()){//change , update new min
+            this.min =x;
+        }
 
 
     }
@@ -342,6 +344,7 @@ public class FibonacciHeap {
      * @param y
      */
     private void cut(HeapNode x ,HeapNode y){
+        y.setRank(y.getRank()-1);//change
         numOfCuts +=1;
         numOfTrees +=1;
         x.setParent(null);//x is a new root
@@ -536,7 +539,7 @@ public class FibonacciHeap {
          * @param k
          */
         public void setRank(int k){
-            if ( k>0){
+            if ( k>=0){
                 this.rank = k;
             }
         }
