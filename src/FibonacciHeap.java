@@ -41,13 +41,21 @@ public class FibonacciHeap {
     public HeapNode insert(int key)
     {
         HeapNode newNode = new HeapNode(key);
-        newNode.setNext(this.first);
-        newNode.setPrev(first.prev);
-        this.first.setPrev(newNode);
-        newNode.prev.setNext(newNode);
-        if (key < this.min.getKey()){
-            min = newNode;
+        if(this.first == null){
+            this.first =newNode;
+            this.min = newNode;
         }
+        else{
+            newNode.setNext(this.first);
+            newNode.setPrev(first.prev);
+            this.first.setPrev(newNode);
+            newNode.prev.setNext(newNode);
+            this.first = newNode; // changed
+            if (key < this.min.getKey()){
+                min = newNode;
+            }
+        }
+
         this.n +=1;
         numOfTrees +=1;
         return newNode;
@@ -62,13 +70,12 @@ public class FibonacciHeap {
     public void deleteMin()
     {
         HeapNode child = this.min.getChild();
-        HeapNode lastChild = child.getPrev();
         if(min.getChild() == null){//min has no child
             if(first.getKey() == min.getKey()){//min is first in the heap
                 if ( n>1){//heap has more than 1 tree
                     first = min.getNext();
-                    min.getNext().setPrev(min.getPrev());
-                    min.getPrev().setNext(min.getNext());
+                    first.setPrev(min.getPrev());
+                    min.getPrev().setNext(first);
                 }
                 else{ //heap has only 1 tree- the min.
                     min = null;
@@ -81,6 +88,7 @@ public class FibonacciHeap {
             }
         }
         else{// the min has children
+            HeapNode lastChild = child.getPrev();//changed
             if(first.getKey() == min.getKey()){//the first is the min
                 first = min.getChild();
             }
@@ -126,31 +134,33 @@ public class FibonacciHeap {
         HeapNode p = first;
         trees[first.getRank()]=first;
         p = p.getNext();
-        while(p.getKey() != first.getKey()){ //entres trees to array
+        while(p.getKey() != first.getKey()) { //entres trees to array
             int k = p.getRank();//finds which cell is needed
-            if (trees[k] == null){//empty cell - no other tree of rank k
-                trees[k] = p; //enters p to the array
-            }
-            else{ //there is another tree in the needed cell
-                HeapNode newroot = link(p,trees[k]); // links the trees to a tree of rank k+1;
+            if (trees[k] == null) {//empty cell - no other tree of rank k
+                trees[k] = p;
+                p = p.getNext();//enters p to the array
+            } else { //there is another tree in the needed cell
+                HeapNode newroot = link(p, trees[k]); // links the trees to a tree of rank k+1;
                 trees[k] = null; //updates the cell to be empty
-                k +=1;
-                while(trees[k] != null){//checks if the next cell is empty (k+1) , if not . countinue to link and check. until the needed cell is empty
-                    newroot = link(newroot,trees[k]);
+                k += 1;
+                while (trees[k] != null) {//checks if the next cell is empty (k+1) , if not . countinue to link and check. until the needed cell is empty
+                    newroot = link(newroot, trees[k]);
                     trees[k] = null;
-                    k+=1;
+                    k += 1;
                 }
                 trees[k] = newroot; //insert the tree to the needed cell
                 p = p.getNext();
 
             }
+        }
 
             int newtreesnum = 0;
             int index = 0;
             while(trees[index] == null){//finds the first tree
                 index +=1;
-                newtreesnum +=1;
+                //newtreesnum +=1;
             }
+            newtreesnum +=1;
             first = trees[index];
             HeapNode lastseen = trees[index];
             for (int i = index+1 ; i <trees.length ; i++){//sets prev and next to the roots in the heap
@@ -167,7 +177,7 @@ public class FibonacciHeap {
             this.numOfTrees = newtreesnum;
 
 
-        }
+
 
 
     }
