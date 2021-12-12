@@ -80,6 +80,8 @@ public class FibonacciHeap {
                 else{ //heap has only 1 tree- the min.
                     min = null;
                     first = null;
+                    numOfTrees = 0;
+                    numMarked = 0;
                 }
             }
             else{//first is not the min
@@ -109,17 +111,23 @@ public class FibonacciHeap {
     }
 
     private void updateMin(){
-        HeapNode p = this.first.getNext();//change
-        HeapNode curmin = this.first;
-        int curminkey = this.first.key;
-        while ( (p!= null) &&(p.getKey() != first.getKey())){
-            if(curminkey > p.getKey()){
-                curmin = p;
-                curminkey = p.getKey();
+        if(!this.isEmpty()){//change
+            HeapNode p = this.first.getNext();//change
+            HeapNode curmin = this.first;
+            int curminkey = this.first.key;
+            while ( (p!= null) &&(p.getKey() != first.getKey())){
+                if(curminkey > p.getKey()){
+                    curmin = p;
+                    curminkey = p.getKey();
+                }
+                p = p.getNext();
             }
-            p = p.getNext();
+            this.min = curmin;
         }
-        this.min = curmin;
+        else{
+            this.min = null;
+        }
+
     }
 
     /**
@@ -129,10 +137,10 @@ public class FibonacciHeap {
         if (this.isEmpty()){
             return;
         }
-        int len = (int)(Math.floor(1.4404 * Math.log(this.n)))+1;//the maxismum rank of a tree
+        int len = ((int)(Math.floor(2 * Math.log(this.n))))+1;//the maxismum rank of a tree//change
         HeapNode [] trees = new HeapNode[len];
         HeapNode p = first;
-        trees[first.getRank()]=first;
+        trees[p.getRank()]=p;
         p = p.getNext();
         while(p.getKey() != first.getKey()) { //entres trees to array
             int k = p.getRank();//finds which cell is needed
@@ -281,7 +289,7 @@ public class FibonacciHeap {
      */
     public int[] countersRep()
     {
-        int k = (int)Math.floor(1.4404 * Math.log(this.n))+1;//the maxismum rank of a tree
+        int k = ((int)(Math.floor(2 * Math.log(this.n))))+1;//the maxismum rank of a tree//change
         int[] res = new int[k];
         HeapNode p = first;
         res[p.getRank()]+=1; //updates the relevant cell
