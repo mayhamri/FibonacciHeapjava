@@ -137,7 +137,7 @@ public class FibonacciHeap {
         if (this.isEmpty()){
             return;
         }
-        int len = ((int)(Math.floor(2 * Math.log(this.n))))+1;//the maxismum rank of a tree//change
+        int len = (int)(1.44444 * (Math.log(this.n)/Math.log(2)))+1;;//the maxismum rank of a tree//change
         HeapNode [] trees = new HeapNode[len];
         HeapNode p = first;
         trees[p.getRank()]=p;
@@ -289,7 +289,7 @@ public class FibonacciHeap {
      */
     public int[] countersRep()
     {
-        int k = ((int)(Math.floor(2 * Math.log(this.n))))+1;//the maxismum rank of a tree//change
+        int k = (int)(1.44444 * (Math.log(this.n)/Math.log(2)))+1;;//the maxismum rank of a tree//change
         int[] res = new int[k];
         HeapNode p = first;
         res[p.getRank()]+=1; //updates the relevant cell
@@ -449,17 +449,17 @@ public class FibonacciHeap {
     public static int[] kMin(FibonacciHeap H, int k)
     {
         int [] res = new int[k];
-        FibonacciHeap options = new FibonacciHeap();
+        FibonacciHeap options = new FibonacciHeap();//creates a heap that will contain all the options
         options.insert(H.min.getKey());
         H.min.brother = options.first;
         options.first.brother = H.min;
         int j = 0;
-        while(j<k){
-            HeapNode remove = options.min;
-            HeapNode realRemove = remove.brother;
+        while(j<k){//finds the j's element
+            HeapNode remove = options.min;//gets the j's item. the smallest of all options
+            HeapNode realRemove = remove.brother; //tells us which node in the originial heap this node represent
             res[j] = remove.getKey();
             options.deleteMin();
-            if(realRemove.child!= null){
+            if(realRemove.child!= null){//if the node we found has children , we will add them to the options heap.
                 HeapNode x = realRemove.getChild();
                 options.insert(x.getKey());
                 options.first.brother = x;
