@@ -40,19 +40,19 @@ public class FibonacciHeap {
      */
     public HeapNode insert(int key)
     {
-        HeapNode newNode = new HeapNode(key);
-        if(this.first == null){
+        HeapNode newNode = new HeapNode(key);//creates the new tree
+        if(this.first == null){//the heap was empty
             this.first =newNode;
             this.min = newNode;
         }
-        else{
+        else{//the heap is not empty
             newNode.setNext(this.first);
             newNode.setPrev(first.prev);
             this.first.setPrev(newNode);
             newNode.prev.setNext(newNode);
-            this.first = newNode; // changed
+            this.first = newNode;
             if (key < this.min.getKey()){
-                min = newNode;
+                min = newNode;//updates new min
             }
         }
 
@@ -109,22 +109,24 @@ public class FibonacciHeap {
         this.successiveLinking();
         this.updateMin();//updates new min
     }
-
+/**
+ * function goes over all of the roots in the heap and updates which one is the min.
+ */
     private void updateMin(){
-        if(!this.isEmpty()){//change
+        if(!this.isEmpty()){//the tree is not empty
             HeapNode p = this.first.getNext();//change
             HeapNode curmin = this.first;
             int curminkey = this.first.key;
             while ( (p!= null) &&(p.getKey() != first.getKey())){
                 if(curminkey > p.getKey()){
                     curmin = p;
-                    curminkey = p.getKey();
+                    curminkey = p.getKey();//new potential min
                 }
                 p = p.getNext();
             }
             this.min = curmin;
         }
-        else{
+        else{//tree is empty
             this.min = null;
         }
 
@@ -134,8 +136,8 @@ public class FibonacciHeap {
      * does successive linking to the heap
      */
     private void successiveLinking(){
-        if (this.isEmpty()){
-            return;
+        if (this.isEmpty()){//tree is empty
+            return;//does nothing
         }
         int len = (int)(1.44444 * (Math.log(this.n)/Math.log(2)))+1;;//the maxismum rank of a tree//change
         HeapNode [] trees = new HeapNode[len];
